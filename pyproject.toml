@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]                        # PEP 621 metadata
 name = "deeplotyper"
-version = "0.1.0"
+version = "0.1.1"
 description = "cDNA⇄genomic mapping and haplotype remapping tools"
 readme = "README.md"
 license = {file = "LICENSE"}

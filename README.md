@@ -1,5 +1,8 @@
 # deeplotyper
 
+![CI](https://https://github.com/eniktab/deeplotyper/actions/workflows/ci.yml/badge.svg)
+
+
 Tools for mapping and remapping genomic ↔ transcript sequences. 
 
 ## Installation
