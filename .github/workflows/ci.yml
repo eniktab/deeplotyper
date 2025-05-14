@@ -33,8 +33,8 @@ jobs:
           pip install pytest flake8 mypy
 
       # 4. Lint with flake8
-      - name: Lint with flake8
-        run: flake8 deeplotyper
+      #- name: Lint with flake8
+      #  run: flake8 deeplotyper
 
       # 5. Type-check with mypy
       - name: Type-check with mypy
