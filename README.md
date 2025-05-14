@@ -1,6 +1,6 @@
 # deeplotyper
 
-[![CI](https://github.com/eniktab/deeplotyper/actions/workflows/ci.yml/badge.svg)](https://github.com/eniktab/deeplotyper/actions/workflows/ci.yml)
+[![CI & Release](https://github.com/eniktab/deeplotyper/actions/workflows/python-publish.yml/badge.svg)](https://github.com/eniktab/deeplotyper/actions/workflows/ci.yml)
 [![PyPI version](https://img.shields.io/pypi/v/deeplotyper.svg)](https://pypi.org/project/deeplotyper/)
 
 
