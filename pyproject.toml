@@ -1,0 +1,34 @@
+[build-system]
+requires = ["setuptools>=60.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]                        # PEP 621 metadata
+name = "deeplotyper"
+version = "0.1.0"
+description = "cDNA⇄genomic mapping and haplotype remapping tools"
+readme = "README.md"
+license = {file = "LICENSE"}
+authors = [{name="Eli Niktab", email="maniktab@gmail.com"}]
+requires-python = ">=3.8"
+dependencies = [
+  "biopython>=1.78",
+  "pysam>=0.19"
+]
+
+[project.urls]
+#"Documentation" = "https://your-docs-host.io"
+"Source"        = "https://github.com/eniktab/deeplotyper"
+"Tracker"       = "https://github.com/eniktab/deeplotyper/issues"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[project.optional-dependencies]
+dev = [
+  "pytest>=6.0",
+  "sphinx>=4.0",
+  "sphinx-autodoc-typehints",
+  "sphinx_rtd_theme",
+  "flake8",
+  "mypy",
+]
