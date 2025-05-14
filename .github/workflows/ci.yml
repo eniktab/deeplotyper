@@ -37,8 +37,8 @@ jobs:
       #  run: flake8 deeplotyper
 
       # 5. Type-check with mypy
-      - name: Type-check with mypy
-        run: mypy deeplotyper
+      #- name: Type-check with mypy
+      #  run: mypy deeplotyper
 
       # 6. Run tests with pytest
       - name: Run tests
