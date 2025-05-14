@@ -1,6 +1,12 @@
 # deeplotyper
 
 ![CI](https://https://github.com/eniktab/deeplotyper/actions/workflows/ci.yml/badge.svg)
+[![CI](https://github.com/eniktab/deeplotyper/actions/workflows/ci.yml/badge.svg)](https://github.com/eniktab/deeplotyper/actions/workflows/ci.yml)
+[![PyPI version](https://img.shields.io/pypi/v/deeplotyper.svg)](https://pypi.org/project/deeplotyper/)
+
+[![PyPI version](https://img.shields.io/pypi/v/deeplotyper.svg)](https://pypi.org/project/deeplotyper/)  
+[![CI](https://github.com/eniktab/deeplotyper/actions/workflows/ci.yml/badge.svg)](https://github.com/eniktab/deeplotyper/actions/workflows/ci.yml)
+
 
 
 Tools for mapping and remapping genomic ↔ transcript sequences. 
