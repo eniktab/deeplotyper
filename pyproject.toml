@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools>=60.0", "wheel"]
+requires = ["setuptools>=61.0.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]                        # PEP 621 metadata
@@ -9,6 +9,14 @@ description = "cDNA⇄genomic mapping and haplotype remapping tools"
 readme = "README.md"
 license = {file = "LICENSE"}
 authors = [{name="Eli Niktab", email="maniktab@gmail.com"}]
+classifiers = [
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Environment :: GPU :: NVIDIA CUDA :: 12 :: 12.4",
+    "Topic :: Scientific/Engineering :: Bio-Informatics"
+]
+keywords = ["vcf", "coordinate", "haplotype", "graph", "protein", "isoform"]
 requires-python = ">=3.8"
 dependencies = [
   "biopython>=1.78",
