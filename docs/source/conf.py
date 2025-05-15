@@ -8,14 +8,14 @@
 
 import os
 import sys
-#import sphinx_rtd_theme
+import sphinx_rtd_theme
 sys.path.insert(0, os.path.abspath('../../src'))
 
 
 project = 'deeplotyper'
 copyright = '2025, Eli Niktab'
 author = 'Eli Niktab'
-release = '0.1.0'
+release = '25.05.0-alpha1'
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
@@ -32,6 +32,5 @@ napoleon_google_docstring = True
 napoleon_numpy_docstring = True
 
 # so you can get an HTML theme, e.g.:
-html_theme = 'alabaster'
-#html_theme = 'sphinx_rtd_theme'
-#html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
+html_theme = 'sphinx_rtd_theme'
+html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]

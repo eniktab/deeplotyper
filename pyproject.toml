@@ -4,39 +4,75 @@ build-backend = "setuptools.build_meta"
 
 [project]                        # PEP 621 metadata
 name = "deeplotyper"
-version = "0.1.1"
-description = "cDNA⇄genomic mapping and haplotype remapping tools"
-readme = "README.md"
-license = {file = "LICENSE"}
-authors = [{name="Eli Niktab", email="maniktab@gmail.com"}]
-classifiers = [
-    "License :: OSI Approved :: MIT License",
-    "Programming Language :: Python",
-    "Programming Language :: Python :: 3",
-    "Environment :: GPU :: NVIDIA CUDA :: 12 :: 12.4",
-    "Topic :: Scientific/Engineering :: Bio-Informatics"
+version = "2025.10.01-alpha"
+description = "Tools for graph based and coordiante base mapping and remapping genomic ↔ transcript ↔ aminoacid sequences."
+readme = { file = "README.md", content-type = "text/markdown" }
+license = { file = "LICENSE" }
+authors = [
+  { name = "Eli Niktab", email = "maniktab@gmail.com" },
 ]
-keywords = ["vcf", "coordinate", "haplotype", "graph", "protein", "isoform"]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "License :: OSI Approved :: MIT License",
+  "Programming Language :: Python",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.11",
+  "Topic :: Scientific/Engineering :: Bio-Informatics",
+]
+keywords = [
+  "vcf",
+  "coordinate",
+  "haplotype",
+  "graph",
+  "protein",
+  "isoform",
+]
 requires-python = ">=3.8"
 dependencies = [
-  "biopython>=1.78",
-  "pysam>=0.19"
+  "biopython>=1.78,<2.0",
+  "pysam>=0.19,<0.20",
 ]
 
 [project.urls]
-#"Documentation" = "https://your-docs-host.io"
-"Source"        = "https://github.com/eniktab/deeplotyper"
-"Tracker"       = "https://github.com/eniktab/deeplotyper/issues"
+Documentation = "https://deeplotyper.readthedocs.io"
+Source        = "https://github.com/eniktab/deeplotyper"
+Tracker       = "https://github.com/eniktab/deeplotyper/issues"
+
+[project.optional-dependencies]
+testing = [
+  "pytest>=6.0,<7.0",
+]
+docs = [
+  "sphinx>=4.0,<5.0",
+  "sphinx-autodoc-typehints",
+  "sphinx_rtd_theme",
+]
+lint = [
+  "flake8>=3.8,<5.0",
+  "mypy>=0.900,<1.0",
+]
+
+[tool.setuptools]
+package-dir = { "" = "src" }
 
 [tool.setuptools.packages.find]
 where = ["src"]
 
-[project.optional-dependencies]
-dev = [
-  "pytest>=6.0",
-  "sphinx>=4.0",
-  "sphinx-autodoc-typehints",
-  "sphinx_rtd_theme",
-  "flake8",
-  "mypy",
-]
+[tool.bumpver]
+current_version   = "2025.10.01-alpha"
+version_pattern   = "YYYY.MM.micro[-TAG]"
+commit_message    = "bump version: {old_version} → {new_version}"
+tag_message       = "{new_version}"
+tag_scope         = "default"
+pre_commit_hook   = ""
+post_commit_hook  = ""
+commit            = true
+tag               = true
+push              = true
+
+[tool.bumpver.file_patterns]
+"pyproject.toml"         = ['version = "{version}"']
+"setup.py"               = ["{version}", "{pep440_version}"]
+"README.md"              = ["{version}", "{pep440_version}"]
+"src/reader/__init__.py" = ["{version}"]
+"docs/source/conf.py"    = ['release = "{version}"']

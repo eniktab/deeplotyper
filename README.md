@@ -4,7 +4,7 @@
 [![PyPI version](https://img.shields.io/pypi/v/deeplotyper.svg)](https://pypi.org/project/deeplotyper/)
 
 
-Tools for mapping and remapping genomic ↔ transcript sequences. 
+Tools for graph based and string based mapping and remapping genomic ↔ transcript ↔ aminoacid sequences.
 
 ## Installation
 
