@@ -51,7 +51,8 @@ docs = [
   "sphinx-autodoc-typehints",
   "sphinx_rtd_theme",
   "furo",
-  "sphinx-autobuild"
+  "sphinx-autobuild",
+  "myst-parser"
 ]
 lint = [
   "flake8>=3.8,<5.0",

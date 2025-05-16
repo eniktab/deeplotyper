@@ -1,5 +1,12 @@
 # deeplotyper
 
+<!-- Center the logo -->
+<p align="center">
+  <img src="https://github.com/eniktab/deeplotyper/blob/main/docs/source/_static/logo.png?raw=true" alt="deeplotyper logo" width="200" />
+</p>
+
+
+
 [![CI & Release](https://github.com/eniktab/deeplotyper/actions/workflows/ci.yml/badge.svg)](https://github.com/eniktab/deeplotyper/actions/workflows/ci.yml)
 [![Publish Python Package](https://github.com/eniktab/deeplotyper/actions/workflows/python-publish.yml/badge.svg)](https://github.com/eniktab/deeplotyper/actions/workflows/python-publish.yml)
 [![PyPI version](https://img.shields.io/pypi/v/deeplotyper.svg)](https://pypi.org/project/deeplotyper/)
