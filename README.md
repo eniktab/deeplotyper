@@ -4,7 +4,7 @@
 [![Publish Python Package](https://github.com/eniktab/deeplotyper/actions/workflows/python-publish.yml/badge.svg)](https://github.com/eniktab/deeplotyper/actions/workflows/python-publish.yml)
 [![PyPI version](https://img.shields.io/pypi/v/deeplotyper.svg)](https://pypi.org/project/deeplotyper/)
 [![Documentation Status](https://readthedocs.org/projects/deeplotyper/badge/?version=latest)](https://deeplotyper.readthedocs.io/en/latest/)
-[//]: # ([![PyPI version](https://img.shields.io/pypi/v/deeplotyper.svg)](https://pypi.org/project/deeplotyper/))
+
 
 # deeplotyper
 

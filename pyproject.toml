@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]                        # PEP 621 metadata
 name = "deeplotyper"
-version = "2025.10.01-alpha"
+version = "2025.10.2-alpha"
 description = "Tools for graph based and string based mapping and remapping genomic ↔ transcript ↔ aminoacid sequences."
 readme = { file = "README.md", content-type = "text/markdown" }
 license = { file = "LICENSE" }
@@ -67,7 +67,7 @@ where = ["src"]
 exclude = ["tests*"]
 
 [tool.bumpver]
-current_version = "2025.10.1-alpha"
+current_version = "2025.10.2-alpha"
 version_pattern = "YYYY.MM.PATCH[-TAG]"
 commit_message    = "bump version: {old_version} → {new_version}"
 tag_message       = "{new_version}"

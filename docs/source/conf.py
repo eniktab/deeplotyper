@@ -15,7 +15,7 @@ sys.path.insert(0, os.path.abspath('../../src'))
 project = 'deeplotyper'
 copyright = '2025, Eli Niktab'
 author = 'Eli Niktab'
-release = '25.05.0-alpha1'
+release = '2025.10.2-alpha'
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
