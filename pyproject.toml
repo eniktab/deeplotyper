@@ -12,7 +12,7 @@ authors = [
   { name = "Eli Niktab", email = "maniktab@gmail.com" },
 ]
 classifiers = [
-  "Development Status :: 4 - Beta",
+  "Development Status :: 4 - Alpha",
   "License :: OSI Approved :: MIT License",
   "Programming Language :: Python",
   "Programming Language :: Python :: 3.8",
@@ -37,7 +37,7 @@ dependencies = [
 ]
 
 [project.urls]
-#Documentation = "https://deeplotyper.readthedocs.io"
+Documentation = "https://deeplotyper.readthedocs.io"
 Source        = "https://github.com/eniktab/deeplotyper"
 Tracker       = "https://github.com/eniktab/deeplotyper/issues"
 
