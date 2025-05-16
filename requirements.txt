@@ -4,9 +4,13 @@
 #
 #    pip-compile pyproject.toml
 #
-biopython==1.85
+biopython
     # via deeplotyper (pyproject.toml)
 numpy==2.2.5
     # via biopython
-pysam==0.23.0
+pysam
     # via deeplotyper (pyproject.toml)
+
+requests
+pytest
+deeplotyper
