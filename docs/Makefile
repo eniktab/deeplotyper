@@ -1,20 +1,26 @@
-# Minimal makefile for Sphinx documentation
-#
+# docs/Makefile — Minimal Sphinx build with autosummary
 
-# You can set these variables from the command line, and also
-# from the environment for the first two.
-SPHINXOPTS    ?=
+# You can override these from the environment or command line
 SPHINXBUILD   ?= sphinx-build
 SOURCEDIR     = source
 BUILDDIR      = build
+AUTOSUMM_DIR  = $(SOURCEDIR)/_autosummary
 
-# Put it first so that "make" without argument is like "make help".
+.PHONY: help clean-autosummary html clean
+
 help:
-	@$(SPHINXBUILD) -M help "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
+	@$(SPHINXBUILD) -M help "$(SOURCEDIR)" "$(BUILDDIR)"
 
-.PHONY: help Makefile
+# Remove old autosummary stubs so we always regenerate
+clean-autosummary:
+	@echo "Cleaning old autosummary stubs…"
+	@rm -rf "$(AUTOSUMM_DIR)"
 
-# Catch-all target: route all unknown targets to Sphinx using the new
-# "make mode" option.  $(O) is meant as a shortcut for $(SPHINXOPTS).
+# Build HTML — first clean autosummary, then let Sphinx generate everything
+html: clean-autosummary
+	@echo "Building HTML with autosummary stubs…"
+	@$(SPHINXBUILD) -M html "$(SOURCEDIR)" "$(BUILDDIR)"
+
+# Generic passthrough for other Sphinx targets (e.g. latexpdf, linkcheck)
 %: Makefile
-	@$(SPHINXBUILD) -M $@ "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
+	@$(SPHINXBUILD) -M $@ "$(SOURCEDIR)" "$(BUILDDIR)"

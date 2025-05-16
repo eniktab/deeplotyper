@@ -1,28 +1,15 @@
-Welcome to deeplotyper’s docs!
-==============================
+.. Deeplotyper documentation master file
 
-.. toctree::
-   :maxdepth: 1
-   :caption: Getting Started
-
-   installation
-   quickstart
-   tutorial
-
-.. toctree::
-   :maxdepth: 1
-   :caption: Guide
-
-   usage
-   faq
-   changelog
+Welcome to Deeplotyper’s documentation!
+=======================================
+.. include:: ../../README.md
+   :parser: markdown
 
 .. toctree::
    :maxdepth: 2
    :caption: API Reference
 
-   modules
-   extras
+   api
 
 Indices and tables
 ==================
