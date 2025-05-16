@@ -49,6 +49,8 @@ docs = [
   "sphinx>=4.0",
   "sphinx-autodoc-typehints",
   "sphinx_rtd_theme",
+  "furo",
+  "sphinx-autobuild"
 ]
 lint = [
   "flake8>=3.8,<5.0",
