@@ -13,7 +13,7 @@ authors = [
 ]
 classifiers = [
   "Development Status :: 4 - Alpha",
-  "License :: OSI Approved :: MIT License",
+  "License :: OSI Approved :: Apache Software License",
   "Programming Language :: Python",
   "Programming Language :: Python :: 3.8",
   "Programming Language :: Python :: 3.9",
@@ -67,7 +67,7 @@ where = ["src"]
 exclude = ["tests*"]
 
 [tool.bumpver]
-current_version = "2025.10.2-alpha"
+current_version = "2025.5.2-alpha"
 version_pattern = "YYYY.MM.PATCH[-TAG]"
 commit_message    = "bump version: {old_version} → {new_version}"
 tag_message       = "{new_version}"

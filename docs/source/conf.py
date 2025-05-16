@@ -25,12 +25,14 @@ extensions = [
     'sphinx.ext.napoleon',
     'sphinx_autodoc_typehints',
     'sphinx.ext.viewcode',
+    "sphinx.ext.autosummary",
 ]
 
+autosummary_generate = True
 autodoc_typehints = "description"
 napoleon_google_docstring = True
 napoleon_numpy_docstring = True
 
 # so you can get an HTML theme, e.g.:
 html_theme = 'sphinx_rtd_theme'
-html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
+#html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]

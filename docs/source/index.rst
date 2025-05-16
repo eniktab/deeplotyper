@@ -6,3 +6,4 @@ Welcome to deeplotyper’s docs!
    :caption: Contents:
 
    modules
+   extras
