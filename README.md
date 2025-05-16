@@ -1,7 +1,10 @@
 # deeplotyper
 
-[![CI & Release](https://github.com/eniktab/deeplotyper/actions/workflows/python-publish.yml/badge.svg)](https://github.com/eniktab/deeplotyper/actions/workflows/ci.yml)
+[![CI & Release](https://github.com/eniktab/deeplotyper/actions/workflows/ci.yml/badge.svg)](https://github.com/eniktab/deeplotyper/actions/workflows/ci.yml)
+[![Publish Python Package](https://github.com/eniktab/deeplotyper/actions/workflows/python-publish.yml/badge.svg)](https://github.com/eniktab/deeplotyper/actions/workflows/python-publish.yml)
 [![PyPI version](https://img.shields.io/pypi/v/deeplotyper.svg)](https://pypi.org/project/deeplotyper/)
+[![Documentation Status](https://readthedocs.org/projects/deeplotyper/badge/?version=latest)](https://deeplotyper.readthedocs.io/en/latest/)
+[//]: # ([![PyPI version](https://img.shields.io/pypi/v/deeplotyper.svg)](https://pypi.org/project/deeplotyper/))
 
 # deeplotyper
 
@@ -189,6 +192,9 @@ Traditional VEP/Haplosaurus workflows have known limitations:
 ## License
 
 [MIT](LICENSE)
+
+## Contributing
+We welcome contributions! Feel free to add requests in the issues section or directly contribute with a pull request.
 
 ## Citations
 
