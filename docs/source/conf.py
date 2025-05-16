@@ -6,24 +6,15 @@
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
-import os
+
 import sys
-#import sphinx_rtd_theme
-sys.path.insert(0, os.path.abspath('../../src'))
-
 import subprocess, pathlib
-# generate fresh stubs from your src folder
+#import sphinx_rtd_theme
+sys.path.insert(
+    0,
+    str(pathlib.Path(__file__).parents[2] / 'src')
+)
 
-"""
-subprocess.run([
-    'sphinx-apidoc',
-    '--separate',
-    '--no-toc',
-    '-o', str(pathlib.Path(__file__).parent /),
-    str(pathlib.Path(__file__).parent.parent / 'src' / 'deeplotyper')
-])
-
-"""
 
 project = 'deeplotyper'
 copyright = '2025, Eli Niktab'
@@ -32,6 +23,17 @@ release = '2025.10.2-alpha'
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
+
+# ---- auto-generate the API rst files on each build ----
+subprocess.run([
+    'sphinx-apidoc',
+    '--separate',
+    '--no-toc',
+    '-o',
+    str(pathlib.Path(__file__).parent),                      # → docs/source/
+    str(pathlib.Path(__file__).parents[2] / 'src' / 'deeplotyper')  # → src/deeplotyper
+], check=True)
+
 
 extensions = [
     'sphinx.ext.autodoc',
