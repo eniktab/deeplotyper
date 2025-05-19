@@ -36,7 +36,7 @@ jobs:
       # Run the following cautiously if fails
       # autopep8 --in-place --aggressive --aggressive --recursive .
       - name: Lint with flake8
-        run: flake8 deeplotyper --max-line-length=100
+        run: flake8 ../deeplotyper --max-line-length=100
 
 
       # 5. Generate type stubs for mypy
