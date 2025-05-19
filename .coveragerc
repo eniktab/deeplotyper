@@ -1,0 +1,17 @@
+[run]
+source = src/deeplotyper
+branch = True
+
+[report]
+exclude_lines =
+    pragma: no cover
+    if __name__ == .__main__.:
+    raise NotImplementedError
+omit =
+    */tests/*
+    */__init__.py
+    setup.py
+    */__main__.py
+
+[html]
+directory = coverage_html_report
