@@ -45,6 +45,7 @@ Tracker       = "https://github.com/eniktab/deeplotyper/issues"
 [project.optional-dependencies]
 testing = [
   "pytest>=6.0",
+  "flake8>=3.8,<5.0",
   "pytest-cov",
   "types-requests",
 ]
@@ -57,7 +58,6 @@ docs = [
   "myst-parser"
 ]
 lint = [
-  "flake8>=3.8,<5.0",
   "mypy>=0.900,<1.0",
 ]
 dev = [
