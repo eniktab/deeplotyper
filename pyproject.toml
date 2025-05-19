@@ -43,6 +43,22 @@ Source        = "https://github.com/eniktab/deeplotyper"
 Tracker       = "https://github.com/eniktab/deeplotyper/issues"
 
 [project.optional-dependencies]
+testing = [
+  "pytest>=6.0",
+  "pytest-cov",
+]
+docs = [
+  "sphinx>=4.0",
+  "sphinx-autodoc-typehints",
+  "sphinx_rtd_theme",
+  "furo",
+  "sphinx-autobuild",
+  "myst-parser"
+]
+lint = [
+  "flake8>=3.8,<5.0",
+  "mypy>=0.900,<1.0",
+]
 dev = [
   # testing
   "pytest>=6.0",
