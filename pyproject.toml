@@ -45,6 +45,7 @@ Tracker       = "https://github.com/eniktab/deeplotyper/issues"
 [project.optional-dependencies]
 testing = [
   "pytest>=6.0",
+  "pytest-cov"
 ]
 docs = [
   "sphinx>=4.0",
