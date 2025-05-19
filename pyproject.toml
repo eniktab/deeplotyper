@@ -43,26 +43,26 @@ Source        = "https://github.com/eniktab/deeplotyper"
 Tracker       = "https://github.com/eniktab/deeplotyper/issues"
 
 [project.optional-dependencies]
-testing = [
+dev = [
+  # testing
   "pytest>=6.0",
-  "pytest-cov"
-]
-docs = [
+  "pytest-cov",
+
+  # docs
   "sphinx>=4.0",
   "sphinx-autodoc-typehints",
   "sphinx_rtd_theme",
   "furo",
   "sphinx-autobuild",
-  "myst-parser"
-]
-lint = [
+  "myst-parser",
+
+  # lint
   "flake8>=3.8,<5.0",
   "mypy>=0.900,<1.0",
-]
 
-dev = [
-  "biopython",
-  "pysam", "bumpver", "pytest" ]
+  # other dev requirements
+  "bumpver",
+]
 
 [tool.setuptools]
 package-dir = { "" = "src" }
