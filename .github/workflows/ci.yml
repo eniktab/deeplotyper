@@ -47,13 +47,9 @@ jobs:
           --cov=deeplotyper --cov-branch --cov-report=xml --cov-report=html --cov-config=.coveragerc \
           --junitxml=junit.xml -o junit_family=legacy
 
-      - name: Show coverage report paths
+      - name: Show coverage report
         shell: bash
         run: |
-          echo "Working directory: $(pwd)"
-          ls -l .
-          echo "Parent directory contents:"
-          ls -l ..
           echo "Results"
           coverage report
 
