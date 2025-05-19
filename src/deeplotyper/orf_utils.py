@@ -1,6 +1,7 @@
 from typing import (
-    Tuple,List
+    Tuple, List
 )
+
 
 def find_orfs(seq: str) -> List[Tuple[int, int, str]]:
     """
@@ -8,19 +9,20 @@ def find_orfs(seq: str) -> List[Tuple[int, int, str]]:
     Searches only the forward strand in reading frames 0, 1, and 2.
     """
     seq = seq.upper()
-    orfs: List[Tuple[int,int,str]] = []
+    orfs: List[Tuple[int, int, str]] = []
     for frame in range(3):
         start_index = None
         for i in range(frame, len(seq) - 2, 3):
-            codon = seq[i:i+3]
+            codon = seq[i:i + 3]
             if start_index is None:
                 if codon == "ATG":
                     start_index = i
             else:
                 if codon in ("TAA", "TAG", "TGA"):
-                    orfs.append((start_index, i+3, seq[start_index:i+3]))
+                    orfs.append((start_index, i + 3, seq[start_index:i + 3]))
                     start_index = None
     return orfs
+
 
 def get_longest_orf(seq: str) -> Tuple[int, int, str]:
     """

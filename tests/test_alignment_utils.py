@@ -1,12 +1,14 @@
 import pytest
 
 from deeplotyper.alignment_utils import (apply_alignment_gaps,
-                                             AlignmentError,
-                                             BlockValidationError)
+                                         AlignmentError,
+                                         BlockValidationError)
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Valid “flanked exon” cases
 # ─────────────────────────────────────────────────────────────────────────────
+
+
 @pytest.mark.parametrize(
     "seq1, seq2, blocks1, blocks2, exp1, exp2",
     [
@@ -16,7 +18,8 @@ from deeplotyper.alignment_utils import (apply_alignment_gaps,
             "AAAA",
             [(4, 8)],
             [(0, 4)],
-            # g1: identical to seq1; g2: only exon, flanked by 4 leading + 12 trailing gaps
+            # g1: identical to seq1; g2: only exon, flanked by 4 leading + 12
+            # trailing gaps
             "GGGGAAAATTTTCCCCGGGG",
             "----AAAA------------",
         ),

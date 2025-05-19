@@ -8,6 +8,8 @@ import pysam
 
 # Helper to generate a fake pysam.VariantFile replacement
 # Helper to generate a fake pysam.VariantFile replacement
+
+
 def make_fake_variantfile(samples, recs):
     class FakeVariantFile:
         def __init__(self, path):
@@ -25,22 +27,28 @@ def make_fake_variantfile(samples, recs):
 
     return FakeVariantFile
 
+
 class FakeCall:
     """Fake genotype call object with a .get('GT')."""
+
     def __init__(self, gt):
         self._gt = gt
+
     def get(self, key):
         if key == "GT":
             return self._gt
         return None
 
+
 class FakeRec:
     """Fake VCF record with pos, ref, alts, and sample_calls."""
+
     def __init__(self, pos, ref, alts, sample_calls):
         self.pos = pos
         self.ref = ref
         self.alts = alts
         self.samples = sample_calls
+
 
 def test_build_sequence_various_events():
     ref = "ATCG"
@@ -55,6 +63,7 @@ def test_build_sequence_various_events():
     # out-of-order should sort by pos0
     assert hg.build_sequence((ev_ins, ev_snv)) == "AGGGGG"
 
+
 def test_build_sequence_clamping():
     ref = "ATCG"
     ev_left = HaplotypeEvent(pos0=-1, ref_allele="A", alt_seq="G")
@@ -63,6 +72,7 @@ def test_build_sequence_clamping():
 
     assert hg.build_sequence((ev_left,)) == "GATCG"
     assert hg.build_sequence((ev_right,)) == "ATCGT"
+
 
 def test_materialize_mapping():
     ev1 = HaplotypeEvent(0, "A", "G")
@@ -77,8 +87,9 @@ def test_materialize_mapping():
     assert mat["GC"] == ("S1",)
     assert mat["AT"] == ("S2", "S3")
 
+
 def test_from_vcf_missing_samples(monkeypatch):
-    FakeVF = make_fake_variantfile(["S1","S2"], [])
+    FakeVF = make_fake_variantfile(["S1", "S2"], [])
     monkeypatch.setattr(pysam, "VariantFile", FakeVF)
     with pytest.raises(ValueError):
         HaplotypeGroups.from_vcf(
@@ -86,10 +97,11 @@ def test_from_vcf_missing_samples(monkeypatch):
             samples=["S3"]
         )
 
+
 def test_from_vcf_default_and_valid(monkeypatch):
     rec = FakeRec(
         pos=1, ref="C", alts=("T",),
-        sample_calls={"S1": FakeCall((1,0))}
+        sample_calls={"S1": FakeCall((1, 0))}
     )
     FakeVF = make_fake_variantfile(["S1"], [rec])
     monkeypatch.setattr(pysam, "VariantFile", FakeVF)
@@ -101,8 +113,13 @@ def test_from_vcf_default_and_valid(monkeypatch):
     assert mat["ATG"] == ("S1",)
     assert mat["ACG"] == ("S1",)
 
+
 def test_from_vcf_skip_out_of_window(monkeypatch):
-    rec = FakeRec(pos=3, ref="C", alts=("T",), sample_calls={"S1": FakeCall((1,))})
+    rec = FakeRec(
+        pos=3, ref="C", alts=(
+            "T",), sample_calls={
+            "S1": FakeCall(
+                (1,))})
     FakeVF = make_fake_variantfile(["S1"], [rec])
     monkeypatch.setattr(pysam, "VariantFile", FakeVF)
 
@@ -111,8 +128,13 @@ def test_from_vcf_skip_out_of_window(monkeypatch):
     )
     assert hg.materialize() == {"AC": ("S1",)}
 
+
 def test_from_vcf_skip_missing_gt(monkeypatch):
-    rec = FakeRec(pos=0, ref="A", alts=("C",), sample_calls={"S1": FakeCall((None,))})
+    rec = FakeRec(
+        pos=0, ref="A", alts=(
+            "C",), sample_calls={
+            "S1": FakeCall(
+                (None,))})
     FakeVF = make_fake_variantfile(["S1"], [rec])
     monkeypatch.setattr(pysam, "VariantFile", FakeVF)
 
@@ -121,9 +143,18 @@ def test_from_vcf_skip_missing_gt(monkeypatch):
     )
     assert hg.materialize() == {"A": ("S1",)}
 
+
 def test_from_vcf_skip_symbolic_and_oob(monkeypatch):
-    rec1 = FakeRec(pos=0, ref="A", alts=("<DEL>",), sample_calls={"S1": FakeCall((1,))})
-    rec2 = FakeRec(pos=0, ref="A", alts=("G",), sample_calls={"S1": FakeCall((2,))})
+    rec1 = FakeRec(
+        pos=0, ref="A", alts=(
+            "<DEL>",), sample_calls={
+            "S1": FakeCall(
+                (1,))})
+    rec2 = FakeRec(
+        pos=0, ref="A", alts=(
+            "G",), sample_calls={
+            "S1": FakeCall(
+                (2,))})
     FakeVF = make_fake_variantfile(["S1"], [rec1, rec2])
     monkeypatch.setattr(pysam, "VariantFile", FakeVF)
 
@@ -131,6 +162,7 @@ def test_from_vcf_skip_symbolic_and_oob(monkeypatch):
         vcf_path="x.vcf", ref_seq="A", contig="chr", start=0
     )
     assert hg.materialize() == {"A": ("S1",)}
+
 
 def test_build_sequence_long_ref_large_indels():
     ref = "ATCGATCGATCG"
@@ -153,11 +185,11 @@ def test_build_sequence_long_ref_large_indels():
     assert hg.build_sequence((ev_del_mid,)) == "ATCGATCG"
 
     # insertion at end
-    ev_ins_end = HaplotypeEvent(len(ref)-1, "G", "TTTTT")
+    ev_ins_end = HaplotypeEvent(len(ref) - 1, "G", "TTTTT")
     assert hg.build_sequence((ev_ins_end,)) == "ATCGATCGATCTTTTT"
 
     # deletion at end
-    ev_del_end = HaplotypeEvent(len(ref)-4, "ATCG", "")
+    ev_del_end = HaplotypeEvent(len(ref) - 4, "ATCG", "")
     assert hg.build_sequence((ev_del_end,)) == "ATCGATCG"
 
     # combined: begin-insert, mid-delete, end-insert

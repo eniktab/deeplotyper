@@ -8,6 +8,8 @@ from Bio import Entrez, SeqIO
 from deeplotyper.extras.ncbi_data_fetcher import NCBIGeneSequenceFetcher
 
 # Simple context-manager stub to fake Entrez handles
+
+
 class DummyCM:
     def __init__(self, handle):
         self.handle = handle
@@ -18,12 +20,14 @@ class DummyCM:
     def __exit__(self, exc_type, exc_val, exc_tb):
         pass
 
+
 @pytest.fixture(autouse=True)
 def clear_caches():
     # Clear lru_caches between tests
     NCBIGeneSequenceFetcher._efetch_records.cache_clear()
     NCBIGeneSequenceFetcher._fetch_linked_record_ids.cache_clear()
     yield
+
 
 def test_init_default_email_and_warning(caplog):
     caplog.set_level(logging.WARNING)
@@ -36,12 +40,14 @@ def test_init_default_email_and_warning(caplog):
     assert Entrez.email == "anonymous@example.com"
     assert "Entrez email not provided" in caplog.text
 
+
 def test_invalid_assembly_raises():
     with pytest.raises(ValueError) as exc:
         NCBIGeneSequenceFetcher(assembly="INVALID")
     msg = str(exc.value)
     assert "Assembly 'INVALID' is not supported" in msg
     assert "Choose one of" in msg
+
 
 def test_normalize_genomic_info():
     raw = {
@@ -61,20 +67,25 @@ def test_normalize_genomic_info():
         "end": 15,
     }
 
+
 def test_compute_exon_arrangement_empty():
     arr = NCBIGeneSequenceFetcher._compute_exon_arrangement({})
     assert arr == {"canonical": {}, "alternatives": {}}
 
+
 def test_compute_exon_arrangement_picks_longest():
     exon_info = {
-        "T1": [{"exon_number": 1, "start": 1, "end": 4, "strand": 1, "sequence": "ATGC"}],  # length 4
-        "T2": [{"exon_number": 1, "start": 1, "end": 10, "strand": 1, "sequence": "ATGCGGTTAA"}],  # length 10
+        # length 4
+        "T1": [{"exon_number": 1, "start": 1, "end": 4, "strand": 1, "sequence": "ATGC"}],
+        # length 10
+        "T2": [{"exon_number": 1, "start": 1, "end": 10, "strand": 1, "sequence": "ATGCGGTTAA"}],
     }
     arr = NCBIGeneSequenceFetcher._compute_exon_arrangement(exon_info)
     # T2 should be canonical
     assert list(arr["canonical"].keys()) == ["T2"]
     assert arr["canonical"]["T2"] == [1]
     assert arr["alternatives"] == {"T1": [1]}
+
 
 def test_select_genomic_region_info_matching():
     fetcher = NCBIGeneSequenceFetcher()
@@ -106,6 +117,7 @@ def test_select_genomic_region_info_matching():
     assert region["ChrStart"] == "100"
     assert region["ChrStop"] == "200"
 
+
 def test_select_genomic_region_info_fallback_and_warning(caplog):
     caplog.set_level(logging.WARNING)
     fetcher = NCBIGeneSequenceFetcher()
@@ -136,13 +148,14 @@ def test_select_genomic_region_info_fallback_and_warning(caplog):
     assert region["ChrAccVer"] == "ACC_FB"
     assert "Assembly 'GRCh38.p14' not found in LocationHist" in caplog.text
 
+
 def test_select_genomic_region_info_no_info_raises():
     fetcher = NCBIGeneSequenceFetcher()
-    summary = {
-        "DocumentSummarySet": {"DocumentSummary": [{"LocationHist": [], "GenomicInfo": []}]}
-    }
+    summary = {"DocumentSummarySet": {"DocumentSummary": [
+        {"LocationHist": [], "GenomicInfo": []}]}}
     with pytest.raises(ValueError):
         fetcher._select_genomic_region_info(summary)
+
 
 def test_fetch_gene_id_success(monkeypatch):
     fetcher = NCBIGeneSequenceFetcher()
@@ -153,6 +166,7 @@ def test_fetch_gene_id_success(monkeypatch):
     gid = fetcher.fetch_gene_id("MYGENE")
     assert gid == "12345"
 
+
 def test_fetch_gene_id_not_found(monkeypatch):
     fetcher = NCBIGeneSequenceFetcher()
     monkeypatch.setattr(Entrez, "esearch", lambda **kwargs: DummyCM(None))
@@ -160,6 +174,7 @@ def test_fetch_gene_id_not_found(monkeypatch):
     with pytest.raises(ValueError) as exc:
         fetcher.fetch_gene_id("MYGENE")
     assert "No gene found for 'MYGENE'" in str(exc.value)
+
 
 def test_fetch_gene_summary(monkeypatch):
     fetcher = NCBIGeneSequenceFetcher()
@@ -169,6 +184,7 @@ def test_fetch_gene_summary(monkeypatch):
     out = fetcher.fetch_gene_summary("123")
     assert out is dummy
 
+
 def test_fetch_genomic_sequence(monkeypatch):
     fetcher = NCBIGeneSequenceFetcher()
     dummy_rec = SeqRecord(Seq("ATGC"), id="acc1")
@@ -177,14 +193,25 @@ def test_fetch_genomic_sequence(monkeypatch):
     rec = fetcher.fetch_genomic_sequence("ACC1", 0, 3)
     assert rec is dummy_rec
 
+
 def test_fetch_cdna_and_protein_sequences(monkeypatch):
     fetcher = NCBIGeneSequenceFetcher()
     dummy_cdna = [SeqRecord(Seq("C"), id="r1")]
     dummy_prot = [SeqRecord(Seq("P"), id="p1")]
-    monkeypatch.setattr(fetcher, "_fetch_linked_record_ids", lambda gid, db, linkname: ["r1"] if db == "nuccore" else ["p1"])
-    monkeypatch.setattr(fetcher, "_fetch_fasta_records", lambda ids, db: dummy_cdna if db == "nuccore" else dummy_prot)
+    monkeypatch.setattr(
+        fetcher,
+        "_fetch_linked_record_ids",
+        lambda gid,
+        db,
+        linkname: ["r1"] if db == "nuccore" else ["p1"])
+    monkeypatch.setattr(
+        fetcher,
+        "_fetch_fasta_records",
+        lambda ids,
+        db: dummy_cdna if db == "nuccore" else dummy_prot)
     assert fetcher.fetch_cdna_sequences("gid") == dummy_cdna
     assert fetcher.fetch_protein_sequences("gid") == dummy_prot
+
 
 def test_fetch_all_ncbi_sequences_handles_no_mane(monkeypatch):
     fetcher = NCBIGeneSequenceFetcher()
@@ -195,16 +222,42 @@ def test_fetch_all_ncbi_sequences_handles_no_mane(monkeypatch):
     dummy_region = {"ChrAccVer": "ACC", "ChrStart": "1", "ChrStop": "2"}
     # Patch all steps
     monkeypatch.setattr(fetcher, "fetch_gene_id", lambda name: "gid")
-    monkeypatch.setattr(fetcher, "fetch_gene_summary", lambda gid: dummy_summary)
-    monkeypatch.setattr(fetcher, "_select_genomic_region_info", lambda sum: dummy_region)
-    monkeypatch.setattr(fetcher, "fetch_genomic_sequence", lambda a, s, e: dummy_g)
+    monkeypatch.setattr(
+        fetcher,
+        "fetch_gene_summary",
+        lambda gid: dummy_summary)
+    monkeypatch.setattr(
+        fetcher,
+        "_select_genomic_region_info",
+        lambda sum: dummy_region)
+    monkeypatch.setattr(
+        fetcher,
+        "fetch_genomic_sequence",
+        lambda a,
+        s,
+        e: dummy_g)
     monkeypatch.setattr(fetcher, "fetch_cdna_sequences", lambda gid: dummy_c)
-    monkeypatch.setattr(fetcher, "fetch_protein_sequences", lambda gid: dummy_p)
+    monkeypatch.setattr(
+        fetcher,
+        "fetch_protein_sequences",
+        lambda gid: dummy_p)
     monkeypatch.setattr(fetcher, "get_exon_info_ncbi", lambda gid: {"e": []})
-    monkeypatch.setattr(fetcher, "get_exon_arrangement_ncbi", lambda gid: {"a": []})
+    monkeypatch.setattr(
+        fetcher,
+        "get_exon_arrangement_ncbi",
+        lambda gid: {
+            "a": []})
     # Simulate no MANE
-    monkeypatch.setattr(fetcher, "fetch_mane_select_cdna", lambda gid: (_ for _ in ()).throw(ValueError))
-    monkeypatch.setattr(fetcher, "fetch_mane_select_protein", lambda gid: (_ for _ in ()).throw(ValueError))
+    monkeypatch.setattr(
+        fetcher,
+        "fetch_mane_select_cdna",
+        lambda gid: (
+            _ for _ in ()).throw(ValueError))
+    monkeypatch.setattr(
+        fetcher,
+        "fetch_mane_select_protein",
+        lambda gid: (
+            _ for _ in ()).throw(ValueError))
 
     raw = fetcher.fetch_all_ncbi_sequences("MYGENE")
     assert raw["genomic"] is dummy_g
@@ -214,6 +267,7 @@ def test_fetch_all_ncbi_sequences_handles_no_mane(monkeypatch):
     assert raw["mane_protein"] is None
     assert raw["exon_info"] == {"e": []}
     assert raw["region_info"] == dummy_region
+
 
 def test_fetch_all_transforms_raw_to_simple(monkeypatch):
     fetcher = NCBIGeneSequenceFetcher()
@@ -236,7 +290,8 @@ def test_fetch_all_transforms_raw_to_simple(monkeypatch):
     monkeypatch.setattr(fetcher, "fetch_all_ncbi_sequences", lambda name: raw)
     out = fetcher.fetch_all("GENE")
     assert out["genomic_sequence"] == "XYZ"
-    assert out["genomic_info"] == NCBIGeneSequenceFetcher._normalize_genomic_info(raw["region_info"])
+    assert out["genomic_info"] == NCBIGeneSequenceFetcher._normalize_genomic_info(
+        raw["region_info"])
     assert out["cdna"] == {"c1": "C1"}
     assert out["protein"] == {"p1": "P1"}
     assert out["ccds"] == {}
@@ -245,15 +300,32 @@ def test_fetch_all_transforms_raw_to_simple(monkeypatch):
     assert out["exon_info"] == {"e": []}
     assert out["exon_arrangements"] == {"a": []}
 
+
 def test_get_exon_info_ncbi(monkeypatch):
     fetcher = NCBIGeneSequenceFetcher()
     # build a SeqRecord with one exon feature
     rec = SeqRecord(Seq("ATGC"), id="T1")
-    feat = SeqFeature(FeatureLocation(0, 4, strand=1), type="exon", qualifiers={"number": ["2"]})
+    feat = SeqFeature(
+        FeatureLocation(
+            0,
+            4,
+            strand=1),
+        type="exon",
+        qualifiers={
+            "number": ["2"]})
     rec.features = [feat]
     # stub out linked IDs and genbank fetch (accept linkname!)
-    monkeypatch.setattr(fetcher, "_fetch_linked_record_ids", lambda gid, db, linkname: ["T1"])
-    monkeypatch.setattr(fetcher, "_fetch_genbank_records", lambda ids, db: [rec])
+    monkeypatch.setattr(
+        fetcher,
+        "_fetch_linked_record_ids",
+        lambda gid,
+        db,
+        linkname: ["T1"])
+    monkeypatch.setattr(
+        fetcher,
+        "_fetch_genbank_records",
+        lambda ids,
+        db: [rec])
     info = fetcher.get_exon_info_ncbi("gid")
     assert "T1" in info
     entry = info["T1"][0]
@@ -262,6 +334,7 @@ def test_get_exon_info_ncbi(monkeypatch):
     assert entry["end"] == 4
     assert entry["strand"] == 1
     assert entry["sequence"] == "ATGC"
+
 
 def test_get_exon_arrangement_ncbi(monkeypatch):
     fetcher = NCBIGeneSequenceFetcher()
@@ -276,6 +349,7 @@ def test_get_exon_arrangement_ncbi(monkeypatch):
     assert list(arr["canonical"].keys()) == ["T2"]
     assert arr["alternatives"] == {"T1": [1]}
 
+
 def test_get_mane_select_transcript_id_success(monkeypatch):
     fetcher = NCBIGeneSequenceFetcher()
     rec1 = SeqRecord(Seq("A"), id="R1")
@@ -283,36 +357,79 @@ def test_get_mane_select_transcript_id_success(monkeypatch):
     rec2 = SeqRecord(Seq("B"), id="R2")
     rec2.annotations = {"keywords": []}
     # stub linked IDs (accept linkname!)
-    monkeypatch.setattr(fetcher, "_fetch_linked_record_ids", lambda gid, db, linkname: ["R1", "R2"])
-    monkeypatch.setattr(fetcher, "_fetch_genbank_records", lambda ids, db: [rec1, rec2])
+    monkeypatch.setattr(
+        fetcher,
+        "_fetch_linked_record_ids",
+        lambda gid,
+        db,
+        linkname: [
+            "R1",
+            "R2"])
+    monkeypatch.setattr(
+        fetcher,
+        "_fetch_genbank_records",
+        lambda ids,
+        db: [
+            rec1,
+            rec2])
     tid = fetcher.get_mane_select_transcript_id("gid")
     assert tid == "R1"
+
 
 def test_get_mane_select_transcript_id_none(monkeypatch):
     fetcher = NCBIGeneSequenceFetcher()
     rec = SeqRecord(Seq("A"), id="R1")
     rec.annotations = {"keywords": []}
     # stub linked IDs (accept linkname!)
-    monkeypatch.setattr(fetcher, "_fetch_linked_record_ids", lambda gid, db, linkname: ["R1"])
-    monkeypatch.setattr(fetcher, "_fetch_genbank_records", lambda ids, db: [rec])
+    monkeypatch.setattr(
+        fetcher,
+        "_fetch_linked_record_ids",
+        lambda gid,
+        db,
+        linkname: ["R1"])
+    monkeypatch.setattr(
+        fetcher,
+        "_fetch_genbank_records",
+        lambda ids,
+        db: [rec])
     with pytest.raises(ValueError):
         fetcher.get_mane_select_transcript_id("gid")
 
+
 def test_get_mane_select_transcript_id_multiple(monkeypatch):
     fetcher = NCBIGeneSequenceFetcher()
-    rec1 = SeqRecord(Seq("A"), id="R1"); rec1.annotations = {"keywords": ["MANE"]}
-    rec2 = SeqRecord(Seq("B"), id="R2"); rec2.annotations = {"keywords": ["MANE"]}
+    rec1 = SeqRecord(Seq("A"), id="R1")
+    rec1.annotations = {"keywords": ["MANE"]}
+    rec2 = SeqRecord(Seq("B"), id="R2")
+    rec2.annotations = {"keywords": ["MANE"]}
     # stub linked IDs (accept linkname!)
-    monkeypatch.setattr(fetcher, "_fetch_linked_record_ids", lambda gid, db, linkname: ["R1", "R2"])
-    monkeypatch.setattr(fetcher, "_fetch_genbank_records", lambda ids, db: [rec1, rec2])
+    monkeypatch.setattr(
+        fetcher,
+        "_fetch_linked_record_ids",
+        lambda gid,
+        db,
+        linkname: [
+            "R1",
+            "R2"])
+    monkeypatch.setattr(
+        fetcher,
+        "_fetch_genbank_records",
+        lambda ids,
+        db: [
+            rec1,
+            rec2])
     with pytest.raises(ValueError) as exc:
         fetcher.get_mane_select_transcript_id("gid")
     assert "Multiple MANE Select transcripts" in str(exc.value)
 
+
 def test_fetch_mane_select_cdna(monkeypatch):
     fetcher = NCBIGeneSequenceFetcher()
     rec = SeqRecord(Seq("AAA"), id="TID")
-    monkeypatch.setattr(fetcher, "get_mane_select_transcript_id", lambda gid: "TID")
+    monkeypatch.setattr(
+        fetcher,
+        "get_mane_select_transcript_id",
+        lambda gid: "TID")
     # _efetch_records stub now accepts rettype and parser keywords
     monkeypatch.setattr(
         NCBIGeneSequenceFetcher,
@@ -322,16 +439,25 @@ def test_fetch_mane_select_cdna(monkeypatch):
     out = fetcher.fetch_mane_select_cdna("gid")
     assert out is rec
 
+
 def test_fetch_mane_select_protein_success(monkeypatch):
     fetcher = NCBIGeneSequenceFetcher()
     cdna = SeqRecord(Seq(""), id="CDNA")
-    feat = SeqFeature(FeatureLocation(0, 1), type="CDS", qualifiers={"protein_id": ["PID"]})
+    feat = SeqFeature(
+        FeatureLocation(
+            0, 1), type="CDS", qualifiers={
+            "protein_id": ["PID"]})
     cdna.features = [feat]
     monkeypatch.setattr(fetcher, "fetch_mane_select_cdna", lambda gid: cdna)
     prot = SeqRecord(Seq("PPP"), id="PID")
-    monkeypatch.setattr(fetcher, "_fetch_fasta_records", lambda ids, db: [prot])
+    monkeypatch.setattr(
+        fetcher,
+        "_fetch_fasta_records",
+        lambda ids,
+        db: [prot])
     out = fetcher.fetch_mane_select_protein("gid")
     assert out is prot
+
 
 def test_fetch_mane_select_protein_no_cds(monkeypatch):
     fetcher = NCBIGeneSequenceFetcher()
@@ -341,6 +467,7 @@ def test_fetch_mane_select_protein_no_cds(monkeypatch):
     with pytest.raises(ValueError):
         fetcher.fetch_mane_select_protein("gid")
 
+
 def test__efetch_records_and_caching(monkeypatch):
     # Patch Entrez.efetch and SeqIO.parse to produce predictable output
     seqs = [SeqRecord(Seq("X"), id="1"), SeqRecord(Seq("Y"), id="2")]
@@ -349,6 +476,7 @@ def test__efetch_records_and_caching(monkeypatch):
         class CM:
             def __enter__(self_inner):
                 return "HANDLE"
+
             def __exit__(self_inner, a, b, c):
                 pass
         return CM()
@@ -371,6 +499,7 @@ def test__efetch_records_and_caching(monkeypatch):
     assert out1 is out2
     assert len(out1) == 2 and out1[0].id == "1"
 
+
 def test_fetch_fasta_and_genbank_wrappers(monkeypatch):
     seqtuple = (SeqRecord(Seq("A"), id="1"),)
     # Stub out the cached function
@@ -383,6 +512,7 @@ def test_fetch_fasta_and_genbank_wrappers(monkeypatch):
     gb = fetcher._fetch_genbank_records(["1"], db="db")
     assert isinstance(fa, list) and fa[0].id == "1"
     assert isinstance(gb, list) and gb[0].id == "1"
+
 
 def test__fetch_linked_record_ids(monkeypatch):
     # Simulate Entrez.elink → Entrez.read sequence

@@ -8,7 +8,12 @@ from deeplotyper.data_models import HaplotypeEvent, NewTranscriptSequences
 class DummyResult:
     """Minimal stand-in for TranscriptMappingResult with only the attributes that
     HaplotypeRemapper actually uses."""
-    def __init__(self, offset: int, cdna_to_dna_map: dict[int, int], seq_region: str):
+
+    def __init__(self,
+                 offset: int,
+                 cdna_to_dna_map: dict[int,
+                                       int],
+                 seq_region: str):
         self.offset = offset
         self.cdna_to_dna_map = cdna_to_dna_map
         self.seq_region = seq_region
@@ -18,9 +23,13 @@ class DummyResult:
 def simple_mapper():
     # A 6-bp reference with a single transcript that covers the entire slice.
     ref = "ATGAAA"
-    mapping = {i + 1: i for i in range(len(ref))}  # cdna positions 1–6 → genome positions 0–5
+    # cdna positions 1–6 → genome positions 0–5
+    mapping = {i + 1: i for i in range(len(ref))}
     res = DummyResult(offset=0, cdna_to_dna_map=mapping, seq_region="chr1")
-    return HaplotypeRemapper(reference_genome=ref, transcript_results={"tx1": res})
+    return HaplotypeRemapper(
+        reference_genome=ref,
+        transcript_results={
+            "tx1": res})
 
 
 def test_initial_offset_empty_results():
@@ -44,7 +53,8 @@ def test_no_events(simple_mapper):
     out = result[key]
     # 1) genome unchanged
     assert out["mutated_genome"] == "ATGAAA"
-    # 2) protein is the translation of the full ORF (no STOP codons → whole seq)
+    # 2) protein is the translation of the full ORF (no STOP codons → whole
+    # seq)
     assert out["genome_protein"] == str(Seq("ATGAAA").translate())
     # 3) identity mapping
     assert out["orig_to_mutated_index"] == {i: i for i in range(6)}

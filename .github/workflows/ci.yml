@@ -33,14 +33,28 @@ jobs:
           pip install .[testing]
 
       # 4. Lint with flake8
-      #- name: Lint with flake8
-      #  run: flake8 deeplotyper
+      # Run the following cautiously if fails
+      # autopep8 --in-place --aggressive --aggressive --recursive .
+      - name: Lint with flake8
+        run: flake8 deeplotyper --max-line-length=100
 
-      # 5. Type-check with mypy
+
+      # 5. Generate type stubs for mypy
+      #- name: Generate type stubs
+      #  run: |
+      #    stubgen -m deeplotyper -o stubs/
+
+      # 6. Run mypy type-checking
       #- name: Type-check with mypy
-      #  run: mypy deeplotyper
+      #  env:
+      #    MYPYPATH: stubs
+      #  run: |
+      #    mypy ../deeplotyper \
+      #      --install-types \
+      #      --non-interactive \
+      #      --ignore-missing-imports
 
-      # 6. Run tests with pytest
+      # 7. Run tests with pytest
       - name: Run tests with coverage
         run: |
           pytest --maxfail=1 --disable-warnings -q \

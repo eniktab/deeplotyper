@@ -9,9 +9,9 @@
 
 [![CI & Release](https://github.com/eniktab/deeplotyper/actions/workflows/ci.yml/badge.svg)](https://github.com/eniktab/deeplotyper/actions/workflows/ci.yml)
 [![Publish Python Package](https://github.com/eniktab/deeplotyper/actions/workflows/python-publish.yml/badge.svg)](https://github.com/eniktab/deeplotyper/actions/workflows/python-publish.yml)
-[![PyPI version](https://img.shields.io/pypi/v/deeplotyper.svg)](https://pypi.org/project/deeplotyper/)
 [![Documentation Status](https://readthedocs.org/projects/deeplotyper/badge/?version=latest)](https://deeplotyper.readthedocs.io/en/latest/)
 [![codecov](https://codecov.io/gh/eniktab/deeplotyper/branch/main/graph/badge.svg)](https://codecov.io/gh/eniktab/deeplotyper)
+[![PyPI version](https://img.shields.io/pypi/v/deeplotyper.svg)](https://pypi.org/project/deeplotyper/)
 [![PyPI Downloads](https://static.pepy.tech/badge/deeplotyper)](https://pepy.tech/projects/deeplotyper)
 
 # deeplotyper

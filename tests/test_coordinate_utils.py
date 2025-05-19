@@ -71,7 +71,8 @@ def test_build_raw_genome_coords_fallback():
     assert result == expected
 
     # Empty spliced also yields empty list
-    assert build_raw_genome_coords("", region, strand, offset, None, None) == []
+    assert build_raw_genome_coords(
+        "", region, strand, offset, None, None) == []
 
 
 @pytest.mark.parametrize("eo,ed", [

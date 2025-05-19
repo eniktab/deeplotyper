@@ -91,7 +91,8 @@ class HaplotypeRemapper:
                 ref_len = len(ev.ref_allele)
                 alt_len = len(ev.alt_seq)
 
-                # choose insertion index so tests for both 1-bp and 5-bp indels match
+                # choose insertion index so tests for both 1-bp and 5-bp indels
+                # match
                 if ref_len == 0:  # insertion
                     if alt_len == 1:
                         idx = ev.pos0 + shift + 1
@@ -103,9 +104,8 @@ class HaplotypeRemapper:
                 # sanity check for substitution/deletion
                 if ref_len:
                     segment = "".join(genome_list[idx: idx + ref_len])
-                    assert segment == ev.ref_allele, (
-                        f"Expected reference allele '{ev.ref_allele}' at idx {idx}, found '{segment}'"
-                    )
+                    assert segment == ev.ref_allele, (f"Expected reference allele '{
+                        ev.ref_allele}' at idx {idx}, found '{segment}'")
 
                 # apply
                 genome_list[idx: idx + ref_len] = list(ev.alt_seq)
@@ -134,7 +134,8 @@ class HaplotypeRemapper:
                     alt_len = len(ev.alt_seq)
 
                     if ref_len == 0:
-                        # insertion: everything at/after pos0 shifts right by alt_len
+                        # insertion: everything at/after pos0 shifts right by
+                        # alt_len
                         if i >= ev.pos0:
                             m += alt_len
                     else:
@@ -154,7 +155,8 @@ class HaplotypeRemapper:
                 if mi is not None:
                     orig_to_mut[self._offset + i] = mi
 
-            # mutated index → original genomic position (None for inserted bases)
+            # mutated index → original genomic position (None for inserted
+            # bases)
             mut_to_orig: List[Any] = [None] * len(mutated_genome)
             for orig_pos, m_idx in orig_to_mut.items():
                 if 0 <= m_idx < len(mutated_genome):
@@ -163,7 +165,8 @@ class HaplotypeRemapper:
             # 5) rebuild each transcript’s cDNA under this haplotype
             mutated_transcripts: Dict[str, NewTranscriptSequences] = {}
             for tx_id, res in self._results.items():
-                # rebuild spliced‐cDNA, dropping deleted bases and inserting alt_seq in exons
+                # rebuild spliced‐cDNA, dropping deleted bases and inserting
+                # alt_seq in exons
                 new_cdna_chars: List[str] = []
                 for cdna_pos in sorted(res.cdna_to_dna_map):
                     orig_pos = res.cdna_to_dna_map[cdna_pos]
@@ -173,9 +176,11 @@ class HaplotypeRemapper:
                     m_idx = orig_to_mut[orig_pos]
                     new_cdna_chars.append(mutated_genome[m_idx])
 
-                    # if an insertion event sits at this genomic position, append it here
+                    # if an insertion event sits at this genomic position,
+                    # append it here
                     for ev in sorted_events:
-                        if ev.ref_allele == "" and (self._offset + ev.pos0) == orig_pos:
+                        if ev.ref_allele == "" and (
+                                self._offset + ev.pos0) == orig_pos:
                             new_cdna_chars.append(ev.alt_seq)
 
                 new_cdna = "".join(new_cdna_chars)
@@ -187,7 +192,7 @@ class HaplotypeRemapper:
                 new_cdna2aa: Dict[int, str] = {}
 
                 for i in range(0, len(orf_seq), 3):
-                    codon = orf_seq[i:i+3]
+                    codon = orf_seq[i:i + 3]
                     aa = str(Seq(codon).translate(to_stop=True))
                     codon_index = i // 3 + 1
 

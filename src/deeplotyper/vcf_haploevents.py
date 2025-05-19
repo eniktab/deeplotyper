@@ -140,8 +140,9 @@ class HaplotypeGroups:
                         if allele - 1 >= len(alts):
                             logger.debug(
                                 "Allele index %d out of range for record %s:%d",
-                                allele, contig, rec.pos
-                            )
+                                allele,
+                                contig,
+                                rec.pos)
                             continue
 
                         alt_seq = alts[allele - 1]

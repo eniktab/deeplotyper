@@ -62,7 +62,7 @@ class EnsemblGeneDataFetcher:
         return data.get("seq", "")
 
     @staticmethod
-    def _normalize_genomic_info (raw: Dict[str, Any]) -> Dict[str, Any]:
+    def _normalize_genomic_info(raw: Dict[str, Any]) -> Dict[str, Any]:
         """Map Ensembl lookup JSON into our unified genomic_info schema."""
         return {
             "assembly": raw.get("assembly_name"),
@@ -215,12 +215,16 @@ class EnsemblGeneDataFetcher:
                 exon_id, exon_number (rank), seq_region, start, end, strand, sequence.
         """
         if transcript_ids is None:
-            transcript_ids = list(self.get_transcript_info()["canonical"].keys())
+            transcript_ids = list(
+                self.get_transcript_info()["canonical"].keys())
 
         exon_info: Dict[str, List[Dict[str, Any]]] = {}
         for tx_id in transcript_ids:
             # Fetch the transcript with its nested Exon children:
-            tx_data = self._get_json(f"/lookup/id/{tx_id}", params={"expand": 1})
+            tx_data = self._get_json(
+                f"/lookup/id/{tx_id}",
+                params={
+                    "expand": 1})
             exons = tx_data.get("Exon", [])
 
             # Sort by genomic start (so rank = position in transcript)
@@ -233,7 +237,8 @@ class EnsemblGeneDataFetcher:
                     f"{exon['start']}..{exon['end']}:"
                     f"{exon['strand']}"
                 )
-                seq = self._fetch_sequence(f"/sequence/region/{self.species}/{region}")
+                seq = self._fetch_sequence(
+                    f"/sequence/region/{self.species}/{region}")
 
                 entries.append({
                     "exon_id": exon["id"],
@@ -311,18 +316,20 @@ class EnsemblGeneDataFetcher:
         # cdna/protein are already maps {tx:seq}, and ccds is a map too
         return {
             "genomic_sequence": raw["gene_record"],
-            "genomic_info":      self._normalize_genomic_info(raw["genomic_info"]),
-            "cdna":               raw["cdna"],
-            "protein":            raw["protein"],
-            "ccds":               raw["ccds"],
+            "genomic_info": self._normalize_genomic_info(raw["genomic_info"]),
+            "cdna": raw["cdna"],
+            "protein": raw["protein"],
+            "ccds": raw["ccds"],
             # Ensembl doesn’t have MANE, so we fill with None
-            "mane_cdna":          None,
-            "mane_protein":       None,
+            "mane_cdna": None,
+            "mane_protein": None,
             # fallback: Ensembl only returns exon_info for canonical
-            # if you want *all* transcripts you could call get_exon_info on all ids
-            "exon_info":          raw["exon_info_canonical"],
-            "exon_arrangements":  raw["exon_arrangements"],
+            # if you want *all* transcripts you could call get_exon_info on all
+            # ids
+            "exon_info": raw["exon_info_canonical"],
+            "exon_arrangements": raw["exon_arrangements"],
         }
+
 
 # --- Example usage ---
 """
@@ -361,4 +368,3 @@ if __name__ == "__main__":
     protein_translations = fetcher.translate_cdna_records(cdna_records)
     print(protein_translations)
 """
-

@@ -41,7 +41,8 @@ def make_aligner(
         mode (str): Alignment mode ('local', 'global', 'semiglobal').
         match_score (float): Score for a match.
         mismatch_score (float): Score for a mismatch.
-        open_gap_score (float): Penalty for opening a gap (must be <= extend_gap_score).
+        open_gap_score (float):
+        Penalty for opening a gap (must be <= extend_gap_score).
         extend_gap_score (float): Penalty for extending a gap.
 
     Returns:
@@ -82,7 +83,8 @@ def _validate_blocks(blocks: Sequence[Block], seq_len: int, name: str) -> None:
         if start == end:
             raise BlockValidationError(f"{name}[{i}] has zero length")
         if start < prev_end:
-            raise BlockValidationError(f"{name}[{i}] overlaps or is out of order")
+            raise BlockValidationError(
+                f"{name}[{i}] overlaps or is out of order")
         if not (0 <= start <= end <= seq_len):
             raise BlockValidationError(
                 f"{name}[{i}] = ({start}, {end}) outside 0..{seq_len}"

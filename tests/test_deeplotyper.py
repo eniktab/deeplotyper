@@ -10,7 +10,7 @@ from deeplotyper.data_models import (
 )
 
 
-# ─── Tests for alignment_utils.py ────────────────────────────────────────────────
+# ─── Tests for alignment_utils.py ───────────────────────────────────────
 
 def test_make_aligner_properties():
     aln = make_aligner(
@@ -90,7 +90,8 @@ def test_find_exon_alignment_blocks_per_exon(mapper):
     # exact‐match branch: exon seq found by simple find()
     spliced = "AAA"
     transcript = "XXXAAAYYY"
-    exon_defs = {1: {"exon_number": 1, "start": 1, "end": 3, "sequence": "AAA"}}
+    exon_defs = {1: {"exon_number": 1,
+                     "start": 1, "end": 3, "sequence": "AAA"}}
     b_sp, b_tx = mapper._find_exon_alignment_blocks(
         spliced, transcript, [1], exon_defs
     )
@@ -218,7 +219,8 @@ def test_map_transcripts_skips_missing_defs(mapper):
 def test_map_transcripts_exon_length_mismatch_raises(mapper):
     meta = {"seq_region_accession": "chrTest", "start": 1, "strand": 1}
     full_genomic = "ATGCGA"
-    # exon end-start+1 != len(sequence) → should raise in build_raw_genome_coords
+    # exon end-start+1 != len(sequence) → should raise in
+    # build_raw_genome_coords
     exon_defs = {
         "tx1": [
             {"exon_number": 1, "start": 1, "end": 5, "sequence": full_genomic}

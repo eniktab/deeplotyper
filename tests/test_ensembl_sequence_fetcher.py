@@ -3,11 +3,12 @@ import logging
 from typing import Any, Dict, List, Optional, Tuple
 from requests.exceptions import HTTPError
 
-import deeplotyper.extras.ensembl_sequence_fetcher as esf_mod
 from deeplotyper.extras.ensembl_sequence_fetcher import EnsemblGeneDataFetcher
+
 
 class DummyResponse:
     """A fake requests.Response for testing _get_json."""
+
     def __init__(self, json_data: Any = None, ok: bool = True):
         self._json = json_data if json_data is not None else {}
         self.ok = ok
@@ -21,8 +22,10 @@ class DummyResponse:
     def json(self):
         return self._json
 
+
 class DummySession:
     """A fake Session whose .get returns a preconfigured DummyResponse."""
+
     def __init__(self, response: DummyResponse):
         self.response = response
         self.headers: Dict[str, str] = {}
@@ -32,9 +35,11 @@ class DummySession:
         self.requests.append((url, params))
         return self.response
 
+
 @pytest.fixture
 def fetcher():
     return EnsemblGeneDataFetcher("MYGENE", species="test_species")
+
 
 def test_init_sets_fields_and_headers(fetcher, monkeypatch):
     # On init, .gene_symbol, .species and session headers should be set
@@ -44,6 +49,7 @@ def test_init_sets_fields_and_headers(fetcher, monkeypatch):
     # The session is a requests.Session with JSON headers
     assert "Content-Type" in f._session.headers
     assert f._session.headers["Content-Type"] == "application/json"
+
 
 def test_get_json_success(monkeypatch, fetcher):
     dummy = DummyResponse(json_data={"foo": "bar"}, ok=True)
@@ -55,20 +61,29 @@ def test_get_json_success(monkeypatch, fetcher):
     # raise_for_status was called
     assert dummy.raise_called
 
+
 def test_get_json_http_error(monkeypatch, fetcher):
     dummy = DummyResponse(json_data=None, ok=False)
     monkeypatch.setattr(fetcher, "_session", DummySession(dummy))
     with pytest.raises(HTTPError):
         fetcher._get_json("/bad/endpoint")
 
+
 def test_fetch_sequence_present(monkeypatch, fetcher):
     # stub _get_json to return a dict with 'seq'
-    monkeypatch.setattr(fetcher, "_get_json", lambda p, params=None: {"seq": "ATGC"})
+    monkeypatch.setattr(
+        fetcher,
+        "_get_json",
+        lambda p,
+        params=None: {
+            "seq": "ATGC"})
     assert fetcher._fetch_sequence("/whatever") == "ATGC"
+
 
 def test_fetch_sequence_missing(monkeypatch, fetcher):
     monkeypatch.setattr(fetcher, "_get_json", lambda p, params=None: {})
     assert fetcher._fetch_sequence("/whatever") == ""
+
 
 def test_normalize_genomic_info():
     raw = {
@@ -87,10 +102,12 @@ def test_normalize_genomic_info():
         "end": 20
     }
 
+
 def test_get_genomic_sequence(monkeypatch, fetcher):
     lookup = {"seq_region_name": "5", "start": 100, "end": 200, "strand": -1}
     # capture the calls
     calls = []
+
     def fake_get_json(endpoint, params=None):
         calls.append((endpoint, params))
         return lookup
@@ -104,8 +121,10 @@ def test_get_genomic_sequence(monkeypatch, fetcher):
     expected_lookup_ep = f"/lookup/symbol/{fetcher.species}/{fetcher.gene_symbol}"
     assert calls[0] == (expected_lookup_ep, None)
 
+
 def test_get_ccds_records_all_paths(monkeypatch, fetcher, caplog):
-    # 1) Non-CCDS xref is skipped, CCS fetch succeeds, N stripped, HTTPError on xref returns {}
+    # 1) Non-CCDS xref is skipped, CCS fetch succeeds, N stripped, HTTPError
+    # on xref returns {}
     caplog.set_level(logging.DEBUG)
     xrefs = [
         {"id": "NOT_CCDS1"},
@@ -113,12 +132,15 @@ def test_get_ccds_records_all_paths(monkeypatch, fetcher, caplog):
         {"id": "CCDS_BAD"}
     ]
     # stub first _get_json for xrefs
+
     def fake_get_json(endpoint, params=None):
         if endpoint.startswith("/xrefs"):
             return xrefs
         raise AssertionError("unexpected endpoint")
     monkeypatch.setattr(fetcher, "_get_json", fake_get_json)
-    # stub _fetch_sequence to raise HTTPError for CCDS_BAD, return seq for CCDS123
+    # stub _fetch_sequence to raise HTTPError for CCDS_BAD, return seq for
+    # CCDS123
+
     def fake_fetch_sequence(path, params=None):
         if "CCDS_BAD" in path:
             raise HTTPError("fail")
@@ -136,9 +158,15 @@ def test_get_ccds_records_all_paths(monkeypatch, fetcher, caplog):
     monkeypatch.setattr(fetcher, "_get_json", bad_json)
     assert fetcher.get_ccds_records() == {}
 
+
 def test_get_transcript_info_errors_and_success(monkeypatch, fetcher):
     # a) ValueError when no transcripts
-    monkeypatch.setattr(fetcher, "_get_json", lambda ep, params=None: {"Transcript": []})
+    monkeypatch.setattr(
+        fetcher,
+        "_get_json",
+        lambda ep,
+        params=None: {
+            "Transcript": []})
     with pytest.raises(ValueError):
         fetcher.get_transcript_info()
 
@@ -148,12 +176,14 @@ def test_get_transcript_info_errors_and_success(monkeypatch, fetcher):
         {"id": "TX2", "biotype": "b2", "Translation": {"id": "P2"}, "is_canonical": 1},
     ]
     # first call to _get_json returns the gene_data
+
     def fake_get_json(endpoint, params=None):
         if "lookup/symbol" in endpoint:
             return {"Transcript": transcripts}
         raise AssertionError("unhandled endpoint")
     monkeypatch.setattr(fetcher, "_get_json", fake_get_json)
     # stub seq fetcher: return cdna or protein based on params
+
     def fake_fetch_sequence(path, params=None):
         return "PROT" if params and params.get("type") == "protein" else "CDNA"
     monkeypatch.setattr(fetcher, "_fetch_sequence", fake_fetch_sequence)
@@ -170,10 +200,12 @@ def test_get_transcript_info_errors_and_success(monkeypatch, fetcher):
         {"id": "A", "biotype": "b", "Translation": {}, "is_canonical": 0},
         {"id": "B", "biotype": "b", "Translation": {}, "is_canonical": 0},
     ]
+
     def fake_get_json2(endpoint, params=None):
         return {"Transcript": transcripts2}
     monkeypatch.setattr(fetcher, "_get_json", fake_get_json2)
     # stub sequence lengths: A->"AA", B->"BBBB"
+
     def fake_fetch2(path, params=None):
         return "BBBB" if "B" in path else "AA"
     monkeypatch.setattr(fetcher, "_fetch_sequence", fake_fetch2)
@@ -182,6 +214,7 @@ def test_get_transcript_info_errors_and_success(monkeypatch, fetcher):
     # should pick B as canonical
     assert list(info2["canonical"].keys()) == ["B"]
     assert list(info2["alternatives"].keys()) == ["A"]
+
 
 def test_combine_transcript_info():
     ti = {
@@ -192,17 +225,30 @@ def test_combine_transcript_info():
     assert cdna_map == {"C1": "AAA", "A1": "CCC"}
     assert prot_map == {"C1": "PPP", "A1": None}
 
+
 def test_get_exon_info_and_sort(monkeypatch, fetcher):
     # stub get_transcript_info to return a single canonical
-    monkeypatch.setattr(fetcher, "get_transcript_info", lambda: {"canonical": {"T1": {}}, "alternatives": {}})
+    monkeypatch.setattr(
+        fetcher,
+        "get_transcript_info",
+        lambda: {
+            "canonical": {
+                "T1": {}},
+            "alternatives": {}})
     # stub _get_json to return two exons out of order
     exons = [
         {"id": "E1", "seq_region_name": "1", "start": 10, "end": 20, "strand": 1},
-        {"id": "E2", "seq_region_name": "1", "start": 5,  "end": 9,  "strand": 1},
+        {"id": "E2", "seq_region_name": "1", "start": 5, "end": 9, "strand": 1},
     ]
-    monkeypatch.setattr(fetcher, "_get_json", lambda ep, params=None: {"Exon": exons})
+    monkeypatch.setattr(
+        fetcher,
+        "_get_json",
+        lambda ep,
+        params=None: {
+            "Exon": exons})
     # stub _fetch_sequence to echo the region string
-    monkeypatch.setattr(fetcher, "_fetch_sequence", lambda path: path.split("/")[-1])
+    monkeypatch.setattr(fetcher, "_fetch_sequence",
+                        lambda path: path.split("/")[-1])
 
     exon_info = fetcher.get_exon_info()
     # entries should be sorted by start: E2 then E1
@@ -212,26 +258,48 @@ def test_get_exon_info_and_sort(monkeypatch, fetcher):
     # the returned sequence should match the region part
     assert entries[0]["sequence"].startswith("1:5..9:1")
 
+
 def test_get_exon_arrangement_ensembl(monkeypatch, fetcher):
     # stub both dependencies
     ti = {"canonical": {"C": {}}, "alternatives": {"A": {}}}
-    ei = {"C": [{"exon_number": 1}, {"exon_number": 2}], "A": [{"exon_number": 3}]}
+    ei = {"C": [{"exon_number": 1}, {"exon_number": 2}],
+          "A": [{"exon_number": 3}]}
     monkeypatch.setattr(fetcher, "get_transcript_info", lambda: ti)
     monkeypatch.setattr(fetcher, "get_exon_info", lambda ids=None: ei)
 
     arr = fetcher.get_exon_arrangement_ensembl()
     assert arr == {"canonical": {"C": [1, 2]}, "alternatives": {"A": [3]}}
 
+
 def test_fetch_all_ensembl_sequences_and_fetch_all(monkeypatch, fetcher):
     # prepare dummy return for fetch_all_ensembl_sequences
     raw = {
         "gene_record": "GENOME_FAKE",
-        "genomic_info": {"assembly_name": "X", "seq_region_name": "Y", "start": 1, "end": 2},
-        "ccds": {"C1": "CCDSSEQ"},
-        "cdna": {"T1": "CDNASEQ"},
-        "protein": {"T1": "PROTSEQ"},
-        "exon_arrangements": {"canonical": {"T1": [1]}, "alternatives": {}},
-        "exon_info_canonical": {"T1": [{"exon_id": "E", "exon_number": 1, "seq_region": "Y", "start": 1, "end": 2, "strand": 1, "sequence": "ESEQ"}]},
+        "genomic_info": {
+            "assembly_name": "X",
+            "seq_region_name": "Y",
+            "start": 1,
+            "end": 2},
+        "ccds": {
+            "C1": "CCDSSEQ"},
+        "cdna": {
+            "T1": "CDNASEQ"},
+        "protein": {
+            "T1": "PROTSEQ"},
+        "exon_arrangements": {
+            "canonical": {
+                "T1": [1]},
+            "alternatives": {}},
+        "exon_info_canonical": {
+            "T1": [
+                {
+                    "exon_id": "E",
+                    "exon_number": 1,
+                    "seq_region": "Y",
+                    "start": 1,
+                    "end": 2,
+                    "strand": 1,
+                    "sequence": "ESEQ"}]},
     }
     monkeypatch.setattr(fetcher, "fetch_all_ensembl_sequences", lambda: raw)
     # test fetch_all

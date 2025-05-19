@@ -190,23 +190,23 @@ class NCBIGeneSequenceFetcher:
         raw = self.fetch_all_ncbi_sequences(gene_name)
 
         # Convert SeqRecord objects to plain strings
-        cdna_map    = {rec.id: str(rec.seq) for rec in raw["cdna"]}
+        cdna_map = {rec.id: str(rec.seq) for rec in raw["cdna"]}
         protein_map = {rec.id: str(rec.seq) for rec in raw["protein"]}
 
         # region_info → genomic_info, genomic SeqRecord → string
         return {
             "genomic_sequence": str(raw["genomic"].seq),
-            "genomic_info":      self._normalize_genomic_info(raw["region_info"]),
-            "cdna":              cdna_map,
-            "protein":           protein_map,
+            "genomic_info": self._normalize_genomic_info(raw["region_info"]),
+            "cdna": cdna_map,
+            "protein": protein_map,
             # NCBI has no CCDS map
-            "ccds":              {},
+            "ccds": {},
             # pull out MANE Select if present
-            "mane_cdna":         (str(raw["mane_cdna"].seq)
-                                  if raw.get("mane_cdna") else None),
-            "mane_protein":      (str(raw["mane_protein"].seq)
-                                  if raw.get("mane_protein") else None),
-            "exon_info":         raw["exon_info"],
+            "mane_cdna": (str(raw["mane_cdna"].seq)
+                          if raw.get("mane_cdna") else None),
+            "mane_protein": (str(raw["mane_protein"].seq)
+                             if raw.get("mane_protein") else None),
+            "exon_info": raw["exon_info"],
             "exon_arrangements": raw["exon_arrangements"],
         }
 
@@ -270,7 +270,8 @@ class NCBIGeneSequenceFetcher:
 
         return exon_data
 
-    def get_exon_arrangement_ncbi(self, gene_id: str) -> Dict[str, Dict[str, List[int]]]:
+    def get_exon_arrangement_ncbi(
+            self, gene_id: str) -> Dict[str, Dict[str, List[int]]]:
         """Determine canonical vs alternative exon arrangements.
 
         Args:
@@ -355,7 +356,8 @@ class NCBIGeneSequenceFetcher:
     @staticmethod
     def _normalize_genomic_info(raw: Dict[str, Any]) -> Dict[str, Any]:
         """Map NCBI region_info dict into our unified genomic_info schema."""
-        # raw keys: 'AnnotationRelease','AssemblyAccVer','ChrAccVer','ChrStart','ChrStop'
+        # raw keys:
+        # 'AnnotationRelease','AssemblyAccVer','ChrAccVer','ChrStart','ChrStop'
         return {
             "assembly": raw.get("AssemblyAccVer"),
             "annotation_release": raw.get("AnnotationRelease"),
@@ -364,7 +366,6 @@ class NCBIGeneSequenceFetcher:
             "start": int(raw.get("ChrStart", 0)),
             "end": int(raw.get("ChrStop", 0))
         }
-
 
     def _select_genomic_region_info(
         self, summary: Dict[str, Any]
@@ -510,6 +511,7 @@ class NCBIGeneSequenceFetcher:
                 if tid != canon
             },
         }
+
 
 # --- Example usage ---
 """

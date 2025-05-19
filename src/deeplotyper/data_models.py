@@ -9,6 +9,7 @@ Base: TypeAlias = str
 CodonIndex: TypeAlias = int
 Region: TypeAlias = str
 
+
 class ExonDef(TypedDict):
     """
     Definition of an exon segment.
@@ -18,6 +19,7 @@ class ExonDef(TypedDict):
     end: Position
     sequence: str
 
+
 class MappingEntry(TypedDict):
     """
     Mapping between transcript and genomic indices.
@@ -26,6 +28,7 @@ class MappingEntry(TypedDict):
     transcript_base: Base
     genomic_index: Position
     genomic_base: Base
+
 
 @dataclass(order=True, frozen=True, slots=True)
 class BaseCoordinateMapping:
@@ -44,6 +47,7 @@ class BaseCoordinateMapping:
     transcript_position: Position
     genomic_base: Base
     transcript_base: Base
+
 
 @dataclass(frozen=True, slots=True)
 class CodonCoordinateMapping:
@@ -65,6 +69,7 @@ class CodonCoordinateMapping:
     genomic_positions: List[Tuple[Region, Position]]
     transcript_positions: List[Tuple[Region, Position]]
 
+
 @dataclass
 class SequenceMappingResult:
     """
@@ -83,10 +88,15 @@ class SequenceMappingResult:
             For each gapped genome index, list of (gapped_transcript_index, length) pairs.
     """
     base_mappings: List[BaseCoordinateMapping] = field(default_factory=list)
-    base_mappings_by_genome: List[BaseCoordinateMapping] = field(default_factory=list)
-    gapped_full_genome_sequence: Mapping[Position, Base] = field(default_factory=dict)
-    gapped_transcript_sequence: Mapping[Position, Base] = field(default_factory=dict)
-    gapped_alignment_map: Mapping[Position, List[Tuple[Position, Position]]] = field(default_factory=dict)
+    base_mappings_by_genome: List[BaseCoordinateMapping] = field(
+        default_factory=list)
+    gapped_full_genome_sequence: Mapping[Position, Base] = field(
+        default_factory=dict)
+    gapped_transcript_sequence: Mapping[Position, Base] = field(
+        default_factory=dict)
+    gapped_alignment_map: Mapping[Position, List[Tuple[Position, Position]]] = field(
+        default_factory=dict)
+
 
 @dataclass
 class TranscriptMappingResult:
@@ -126,18 +136,27 @@ class TranscriptMappingResult:
     transcript_to_genomic: List[MappingEntry] = field(default_factory=list)
     cdna_to_dna_map: Mapping[Position, Position] = field(default_factory=dict)
     dna_to_cdna_map: Mapping[Position, Position] = field(default_factory=dict)
-    exon_to_genomic: Mapping[int, List[MappingEntry]] = field(default_factory=dict)
-    exon_to_transcript: Mapping[int, List[MappingEntry]] = field(default_factory=dict)
-    dna_to_exon_map: Mapping[Position, Tuple[int, Position]] = field(default_factory=dict)
-    cdna_to_exon_map: Mapping[Position, Tuple[int, Position]] = field(default_factory=dict)
-    codon_map: Mapping[CodonIndex, CodonCoordinateMapping] = field(default_factory=dict)
+    exon_to_genomic: Mapping[int, List[MappingEntry]
+                             ] = field(default_factory=dict)
+    exon_to_transcript: Mapping[int, List[MappingEntry]] = field(
+        default_factory=dict)
+    dna_to_exon_map: Mapping[Position, Tuple[int, Position]] = field(
+        default_factory=dict)
+    cdna_to_exon_map: Mapping[Position, Tuple[int, Position]] = field(
+        default_factory=dict)
+    codon_map: Mapping[CodonIndex, CodonCoordinateMapping] = field(
+        default_factory=dict)
     dna_to_protein_map: Mapping[Position, str] = field(default_factory=dict)
     cdna_to_protein_map: Mapping[Position, str] = field(default_factory=dict)
-    gapped_full_genome_sequence: Mapping[Position, Base] = field(default_factory=dict)
-    gapped_transcript_sequence: Mapping[Position, Base] = field(default_factory=dict)
-    gapped_alignment_map: Mapping[Position, List[Tuple[Position, Position]]] = field(default_factory=dict)
+    gapped_full_genome_sequence: Mapping[Position, Base] = field(
+        default_factory=dict)
+    gapped_transcript_sequence: Mapping[Position, Base] = field(
+        default_factory=dict)
+    gapped_alignment_map: Mapping[Position, List[Tuple[Position, Position]]] = field(
+        default_factory=dict)
     seq_region: str = ""
     offset: Position = 0
+
 
 @dataclass(frozen=True, slots=True)
 class RawBase:
@@ -153,6 +172,7 @@ class RawBase:
     position: Position
     base: Base
 
+
 @dataclass(frozen=True, slots=True)
 class HaplotypeEvent:
     """
@@ -166,6 +186,7 @@ class HaplotypeEvent:
     pos0: int
     ref_allele: str
     alt_seq: str
+
 
 @dataclass
 class NewTranscriptSequences:
@@ -186,6 +207,7 @@ class NewTranscriptSequences:
     """
     exon_sequences: Mapping[int, str] = field(default_factory=dict)
     cdna_sequence: str = ""
-    codon_map: Mapping[CodonIndex, CodonCoordinateMapping] = field(default_factory=dict)
+    codon_map: Mapping[CodonIndex, CodonCoordinateMapping] = field(
+        default_factory=dict)
     dna_to_protein_map: Mapping[Position, str] = field(default_factory=dict)
     cdna_to_protein_map: Mapping[Position, str] = field(default_factory=dict)

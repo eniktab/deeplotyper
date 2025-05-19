@@ -9,6 +9,8 @@ docs/build/*
 src/deeplotyper/drafts/*
 src/deeplotyper/logs/*
 
+# Stubs
+stubs/*
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

@@ -12,7 +12,7 @@ from deeplotyper import HaplotypeRemapper
 from deeplotyper.data_models import HaplotypeEvent, RawBase
 
 
-# ─── Sample data ────────────────────────────────────────────────────────────────
+# ─── Sample data ────────────────────────────────────────────────────────
 
 genomic_seq = "ATG" + "TT" + "AAA" + "T" + "TAG"  # "ATGTTAAATTAG"
 genomic_info = {
@@ -43,6 +43,7 @@ transcript_seqs = {
     "tx2": "ATGAAATAG",
 }
 
+
 @pytest.fixture(scope="module")
 def mapping_results():
     return SequenceCoordinateMapper().map_transcripts(
@@ -55,7 +56,7 @@ def mapping_results():
     )
 
 
-# ─── Existing mapping tests ─────────────────────────────────────────────────────
+# ─── Existing mapping tests ─────────────────────────────────────────────
 
 def test_mapping_metadata_and_roundtrip_maps(mapping_results):
     for tx_id, tx in mapping_results.items():
@@ -78,7 +79,7 @@ def test_mapping_metadata_and_roundtrip_maps(mapping_results):
 
         # 4) codon_map codons line up with the transcript sequence
         seq = transcript_seqs[tx_id]
-        expected_codons = [seq[i : i + 3] for i in range(0, len(seq), 3)]
+        expected_codons = [seq[i: i + 3] for i in range(0, len(seq), 3)]
         actual_codons = [cm.codon for _, cm in sorted(tx.codon_map.items())]
         assert actual_codons == expected_codons
 
@@ -109,7 +110,11 @@ def test_mapping_metadata_and_roundtrip_maps(mapping_results):
         }),
     ]
 )
-def test_apply_haplotypes_full(mapping_results, events, expected_genome, expected_tx_seqs):
+def test_apply_haplotypes_full(
+        mapping_results,
+        events,
+        expected_genome,
+        expected_tx_seqs):
     remapper = HaplotypeRemapper(genomic_seq, mapping_results)
     mutated = remapper.apply_haplotypes({events: ("sample",)})
     out = mutated[frozenset(events)]
@@ -141,7 +146,7 @@ def test_apply_haplotypes_full(mapping_results, events, expected_genome, expecte
         assert out["transcripts"][tx_id].cdna_sequence == exp_cdna
 
 
-# ─── New edge‐case tests ─────────────────────────────────────────────────────────
+# ─── New edge‐case tests ────────────────────────────────────────────────
 
 def test_make_aligner_caching_and_modes():
     a1 = make_aligner()
@@ -207,8 +212,10 @@ def test_build_raw_genome_coords_fallback_and_exon_mismatch():
 def test_find_orfs_and_get_longest_orf():
     seq = "CCCATGAAATGATAGGGTGA"
     orfs = find_orfs(seq)
-    assert any(start == 3 and seq[start:end] == seq[3:end] for start, end, _ in orfs)
-    assert any(start == 8 and seq[start:end] == seq[8:end] for start, end, _ in orfs)
+    assert any(start == 3 and seq[start:end] == seq[3:end]
+               for start, end, _ in orfs)
+    assert any(start == 8 and seq[start:end] == seq[8:end]
+               for start, end, _ in orfs)
 
     longest = get_longest_orf(seq)
     assert longest == max(orfs, key=lambda x: len(x[2]))
@@ -262,7 +269,7 @@ def test_apply_haplotypes_empty_and_bad_ref(mapping_results):
         remapper.apply_haplotypes(bad)
 
 
-# ─── Additional edge‐case tests for apply_haplotypes ───────────────────────────
+# ─── Additional edge‐case tests for apply_haplotypes ────────────────────
 
 def test_apply_haplotypes_insertion_at_start(mapping_results):
     remapper = HaplotypeRemapper(genomic_seq, mapping_results)
@@ -292,12 +299,12 @@ def test_apply_haplotypes_deletion_at_end(mapping_results):
 def test_apply_haplotypes_multibase_substitution(mapping_results):
     remapper = HaplotypeRemapper(genomic_seq, mapping_results)
     pos = 2
-    ref = genomic_seq[pos : pos + 3]
+    ref = genomic_seq[pos: pos + 3]
     alt = "CCC"
     ev = (HaplotypeEvent(pos, ref, alt),)
     out = remapper.apply_haplotypes({ev: ("multi_sub",)})[frozenset(ev)]
 
-    expected_genome = genomic_seq[:pos] + alt + genomic_seq[pos + 3 :]
+    expected_genome = genomic_seq[:pos] + alt + genomic_seq[pos + 3:]
     assert out["mutated_genome"] == expected_genome
 
     # transcripts pick up exactly those three bases in exon1
@@ -378,18 +385,22 @@ def test_apply_haplotypes_invalid_positions_and_mismatch(mapping_results):
 
     # negative-position insertion prepends
     ev_neg = (HaplotypeEvent(-1, "", "A"),)
-    out_neg = remapper.apply_haplotypes({ev_neg: ("neg_ins",)})[frozenset(ev_neg)]
+    out_neg = remapper.apply_haplotypes({ev_neg: ("neg_ins",)})[
+        frozenset(ev_neg)]
     assert out_neg["mutated_genome"] == "A" + genomic_seq
 
     # substitution past end => error
     with pytest.raises(AssertionError):
-        remapper.apply_haplotypes({(HaplotypeEvent(len(genomic_seq), "A", "T"),): ("oob_snp",)})
+        remapper.apply_haplotypes(
+            {(HaplotypeEvent(len(genomic_seq), "A", "T"),): ("oob_snp",)})
 
     # insertion past end => append
     ev_oob = (HaplotypeEvent(len(genomic_seq) + 1, "", "A"),)
-    out_oob = remapper.apply_haplotypes({ev_oob: ("oob_ins",)})[frozenset(ev_oob)]
+    out_oob = remapper.apply_haplotypes({ev_oob: ("oob_ins",)})[
+        frozenset(ev_oob)]
     assert out_oob["mutated_genome"] == genomic_seq + "A"
 
     # ref‐allele mismatch => error
     with pytest.raises(AssertionError):
-        remapper.apply_haplotypes({(HaplotypeEvent(2, "AAA", "CCC"),): ("bad_ref",)})
+        remapper.apply_haplotypes(
+            {(HaplotypeEvent(2, "AAA", "CCC"),): ("bad_ref",)})

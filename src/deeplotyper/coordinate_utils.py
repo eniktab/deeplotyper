@@ -5,6 +5,7 @@ from typing import Optional
 
 from .data_models import RawBase, ExonDef
 
+
 def build_linear_coords(
     sequence: str,
     region: str,

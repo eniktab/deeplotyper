@@ -58,7 +58,8 @@ class SequenceCoordinateMapper:
                 else:
                     aln = local_aln.align(seq, transcript)[0]
                     raw_sp, raw_tx = aln.aligned
-                    blk_sp = [(cursor_sp + int(a), cursor_sp + int(b)) for a, b in raw_sp]
+                    blk_sp = [(cursor_sp + int(a), cursor_sp + int(b))
+                              for a, b in raw_sp]
                     blk_tx = [(int(a), int(b)) for a, b in raw_tx]
 
                 blocks_spliced.extend(blk_sp)
@@ -104,14 +105,16 @@ class SequenceCoordinateMapper:
         Returns:
             A list of BaseCoordinateMapping entries for each retained base match.
         """
-        sp_g, tx_g = apply_alignment_gaps(spliced, transcript, blocks_sp, blocks_tx)
+        sp_g, tx_g = apply_alignment_gaps(
+            spliced, transcript, blocks_sp, blocks_tx)
 
         # collect matches
         matches: List[Tuple[int, int, RawBase, RawBase]] = []
         i_sp = i_tx = 0
         for a_char, t_char in zip(sp_g, tx_g):
             if a_char != "-" and t_char != "-":
-                matches.append((i_sp, i_tx, raw_genome[i_sp], raw_transcript[i_tx]))
+                matches.append(
+                    (i_sp, i_tx, raw_genome[i_sp], raw_transcript[i_tx]))
             if a_char != "-":
                 i_sp += 1
             if t_char != "-":
@@ -123,8 +126,7 @@ class SequenceCoordinateMapper:
             current = [matches[0]]
             for sp_i, tx_i, g_raw, t_raw in matches[1:]:
                 _, _, prev_g, prev_t = current[-1]
-                if (g_raw.position == prev_g.position + 1
-                        and t_raw.position == prev_t.position + 1):
+                if g_raw.position == prev_g.position + 1 and t_raw.position == prev_t.position + 1:
                     current.append((sp_i, tx_i, g_raw, t_raw))
                 else:
                     runs.append(current)
@@ -138,11 +140,11 @@ class SequenceCoordinateMapper:
                 continue
             for _, _, g_raw, t_raw in run:
                 result.append(BaseCoordinateMapping(
-                    global_position     = g_raw.position,
-                    genomic_position    = g_raw.position,
-                    transcript_position = t_raw.position,
-                    genomic_base        = g_raw.base,
-                    transcript_base     = t_raw.base
+                    global_position=g_raw.position,
+                    genomic_position=g_raw.position,
+                    transcript_position=t_raw.position,
+                    genomic_base=g_raw.base,
+                    transcript_base=t_raw.base
                 ))
         return result
 
@@ -231,11 +233,11 @@ class SequenceCoordinateMapper:
         sorted_by_genome = sorted(base_maps, key=lambda m: m.genomic_position)
 
         return SequenceMappingResult(
-            base_mappings                   = base_maps,
-            base_mappings_by_genome         = sorted_by_genome,
-            gapped_full_genome_sequence     = g_full,
-            gapped_transcript_sequence      = g_exon,
-            gapped_alignment_map            = g_map
+            base_mappings=base_maps,
+            base_mappings_by_genome=sorted_by_genome,
+            gapped_full_genome_sequence=g_full,
+            gapped_transcript_sequence=g_exon,
+            gapped_alignment_map=g_map
         )
 
     def _generate_codon_mappings(
@@ -260,25 +262,27 @@ class SequenceCoordinateMapper:
               - dna2aa: maps genomic position to amino acid
               - cdna2aa: maps transcript position to amino acid
         """
-        raw_g = [(seq_region, m.genomic_position, m.genomic_base) for m in base_maps]
-        raw_t = [(transcript_id, m.transcript_position, m.transcript_base) for m in base_maps]
+        raw_g = [(seq_region, m.genomic_position, m.genomic_base)
+                 for m in base_maps]
+        raw_t = [(transcript_id, m.transcript_position, m.transcript_base)
+                 for m in base_maps]
 
         codon_map: Dict[int, CodonCoordinateMapping] = {}
         dna2aa: Dict[int, str] = {}
         cdna2aa: Dict[int, str] = {}
         for i in range(0, len(raw_g) - 2, 3):
-            trip_g = raw_g[i : i + 3]
-            trip_t = raw_t[i : i + 3]
+            trip_g = raw_g[i: i + 3]
+            trip_t = raw_t[i: i + 3]
             cod = "".join(b for _, _, b in trip_g)
             aa = str(Seq(cod).translate(to_stop=False))
             idx = i // 3 + 1
 
             codon_map[idx] = CodonCoordinateMapping(
-                codon_index          = idx,
-                codon                = cod,
-                amino_acid           = aa,
-                genomic_positions    = [(r, p) for r, p, _ in trip_g],
-                transcript_positions = [(r, p) for r, p, _ in trip_t]
+                codon_index=idx,
+                codon=cod,
+                amino_acid=aa,
+                genomic_positions=[(r, p) for r, p, _ in trip_g],
+                transcript_positions=[(r, p) for r, p, _ in trip_t]
             )
             for _, p, _ in trip_g:
                 dna2aa[p] = aa
@@ -321,34 +325,38 @@ class SequenceCoordinateMapper:
             defs = exon_definitions_by_transcript.get(tx_id)
             if not defs:
                 continue
-            order = exon_orders.get(tx_id, sorted(e["exon_number"] for e in defs))
+            order = exon_orders.get(
+                tx_id, sorted(
+                    e["exon_number"] for e in defs))
             by_num = {e["exon_number"]: e for e in defs}
             spliced = "".join(by_num[n]["sequence"] for n in order)
 
             seq_res = self._generate_base_coordinate_mappings(
-                spliced_sequence       = spliced,
-                genome_metadata        = meta,
-                exon_order             = order,
-                exon_definitions       = defs,
-                transcript_sequence    = tx_seq,
-                full_genomic_sequence  = full_genomic_sequence,
-                transcript_start       = 1,
-                transcript_name        = tx_id,
-                min_block_length       = min_block_length
+                spliced_sequence=spliced,
+                genome_metadata=meta,
+                exon_order=order,
+                exon_definitions=defs,
+                transcript_sequence=tx_seq,
+                full_genomic_sequence=full_genomic_sequence,
+                transcript_start=1,
+                transcript_name=tx_id,
+                min_block_length=min_block_length
             )
 
             base_map: List[MappingEntry] = [
                 MappingEntry(
-                    transcript_index = m.transcript_position,
-                    transcript_base  = m.transcript_base,
-                    genomic_index    = m.genomic_position,
-                    genomic_base     = m.genomic_base
+                    transcript_index=m.transcript_position,
+                    transcript_base=m.transcript_base,
+                    genomic_index=m.genomic_position,
+                    genomic_base=m.genomic_base
                 )
                 for m in seq_res.base_mappings
             ]
 
-            cdna2dna = {e["transcript_index"]: e["genomic_index"] for e in base_map}
-            dna2cdna = {e["genomic_index"]: e["transcript_index"] for e in base_map}
+            cdna2dna = {e["transcript_index"]: e["genomic_index"]
+                        for e in base_map}
+            dna2cdna = {e["genomic_index"]: e["transcript_index"]
+                        for e in base_map}
 
             exon_to_genome: Dict[int, List[MappingEntry]] = defaultdict(list)
             exon_to_tx: Dict[int, List[MappingEntry]] = defaultdict(list)
@@ -366,7 +374,10 @@ class SequenceCoordinateMapper:
                 ex = cdna_to_exon.get(pos_t)
                 if ex is not None:
                     exon_to_tx[ex].append(e)
-                if any(pos_g == p for p in range(by_num[ex]["start"], by_num[ex]["end"] + 1)):
+                if any(
+                    pos_g == p for p in range(
+                        by_num[ex]["start"],
+                        by_num[ex]["end"] + 1)):
                     exon_to_genome[ex].append(e)
 
             codon_map, dna2aa, cdna2aa = self._generate_codon_mappings(
@@ -376,21 +387,21 @@ class SequenceCoordinateMapper:
             )
 
             results[tx_id] = TranscriptMappingResult(
-                transcript_to_genomic       = base_map,
-                cdna_to_dna_map             = cdna2dna,
-                dna_to_cdna_map             = dna2cdna,
-                exon_to_genomic             = dict(exon_to_genome),
-                exon_to_transcript          = dict(exon_to_tx),
-                dna_to_exon_map             = dna_to_exon,
-                cdna_to_exon_map            = cdna_to_exon,
-                codon_map                   = codon_map,
-                dna_to_protein_map          = dna2aa,
-                cdna_to_protein_map         = cdna2aa,
-                gapped_full_genome_sequence = seq_res.gapped_full_genome_sequence,
-                gapped_transcript_sequence  = seq_res.gapped_transcript_sequence,
-                gapped_alignment_map        = seq_res.gapped_alignment_map,
-                seq_region                  = meta["seq_region_accession"],
-                offset                      = meta.get("start", 1),
+                transcript_to_genomic=base_map,
+                cdna_to_dna_map=cdna2dna,
+                dna_to_cdna_map=dna2cdna,
+                exon_to_genomic=dict(exon_to_genome),
+                exon_to_transcript=dict(exon_to_tx),
+                dna_to_exon_map=dna_to_exon,
+                cdna_to_exon_map=cdna_to_exon,
+                codon_map=codon_map,
+                dna_to_protein_map=dna2aa,
+                cdna_to_protein_map=cdna2aa,
+                gapped_full_genome_sequence=seq_res.gapped_full_genome_sequence,
+                gapped_transcript_sequence=seq_res.gapped_transcript_sequence,
+                gapped_alignment_map=seq_res.gapped_alignment_map,
+                seq_region=meta["seq_region_accession"],
+                offset=meta.get("start", 1),
             )
 
         return results
