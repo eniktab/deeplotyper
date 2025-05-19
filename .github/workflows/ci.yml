@@ -46,9 +46,17 @@ jobs:
           pytest --maxfail=1 --disable-warnings -q \
           --cov --cov-branch --cov-report=xml --cov-config=.coveragerc \
           --junitxml=junit.xml -o junit_family=legacy
-          
 
       - name: Upload results to Codecov
         uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
+          files: ./coverage.xml
+          fail_ci_if_error: true
+
+      - name: Upload test results to Codecov
+        if: ${{ !cancelled() }}
+        uses: codecov/test-results-action@v1
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: ./junit.xml

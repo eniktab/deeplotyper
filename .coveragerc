@@ -12,6 +12,3 @@ omit =
     */__init__.py
     setup.py
     */__main__.py
-
-[html]
-directory = coverage_html_report
