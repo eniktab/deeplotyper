@@ -6,7 +6,7 @@
 </p>
 
 
-
+[![DOI](https://zenodo.org/badge/983319620.svg)](https://doi.org/10.5281/zenodo.17247878)
 [![CI & Release](https://github.com/eniktab/deeplotyper/actions/workflows/ci.yml/badge.svg)](https://github.com/eniktab/deeplotyper/actions/workflows/ci.yml)
 [![Publish Python Package](https://github.com/eniktab/deeplotyper/actions/workflows/python-publish.yml/badge.svg)](https://github.com/eniktab/deeplotyper/actions/workflows/python-publish.yml)
 [![Documentation Status](https://readthedocs.org/projects/deeplotyper/badge/?version=latest)](https://deeplotyper.readthedocs.io/en/latest/)
