@@ -386,10 +386,28 @@ class SequenceCoordinateMapper:
                 tx_id
             )
 
+            # cDNA position -> ASCENDING reference-sequence coordinate, for strand-safe
+            # sequence reconstruction. Derived from the SAME declared exon coordinates as
+            # cdna_to_dna_map (NOT a second alignment), so it inherits the same locus and
+            # min_block_length behaviour: for strand=-1 each reported coordinate is mirrored
+            # within its declared exon (start + end - coord) to recover reference-sequence
+            # ORDER, while cdna_to_dna_map keeps the descending coordinate for strand-aware
+            # reporting. For strand=+1 it equals cdna_to_dna_map.
+            tx_strand = meta.get("strand", 1)
+            if tx_strand == -1:
+                cdna_to_refidx: Dict[int, int] = {}
+                for p, coord in cdna2dna.items():
+                    span = next(((e["start"], e["end"]) for e in (defs or [])
+                                 if e["start"] <= coord <= e["end"]), None)
+                    cdna_to_refidx[p] = (span[0] + span[1] - coord) if span else coord
+            else:
+                cdna_to_refidx = dict(cdna2dna)
+
             results[tx_id] = TranscriptMappingResult(
                 transcript_to_genomic=base_map,
                 cdna_to_dna_map=cdna2dna,
                 dna_to_cdna_map=dna2cdna,
+                cdna_to_refindex=cdna_to_refidx,
                 exon_to_genomic=dict(exon_to_genome),
                 exon_to_transcript=dict(exon_to_tx),
                 dna_to_exon_map=dna_to_exon,

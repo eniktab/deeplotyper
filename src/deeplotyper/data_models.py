@@ -136,6 +136,12 @@ class TranscriptMappingResult:
     transcript_to_genomic: List[MappingEntry] = field(default_factory=list)
     cdna_to_dna_map: Mapping[Position, Position] = field(default_factory=dict)
     dna_to_cdna_map: Mapping[Position, Position] = field(default_factory=dict)
+    # cDNA position -> ASCENDING reference-sequence coordinate (offset + 0-based index
+    # into full_genomic_sequence). Unlike cdna_to_dna_map, which reports the strand-aware
+    # genomic coordinate (descending for strand=-1), this index tracks the ORDER of the
+    # provided reference sequence and is what sequence reconstruction must use so that
+    # minus-strand transcripts are not reversed. Empty => callers fall back to cdna_to_dna_map.
+    cdna_to_refindex: Mapping[Position, Position] = field(default_factory=dict)
     exon_to_genomic: Mapping[int, List[MappingEntry]
                              ] = field(default_factory=dict)
     exon_to_transcript: Mapping[int, List[MappingEntry]] = field(

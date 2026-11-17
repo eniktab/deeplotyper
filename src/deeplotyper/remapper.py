@@ -168,8 +168,15 @@ class HaplotypeRemapper:
                 # rebuild spliced‐cDNA, dropping deleted bases and inserting
                 # alt_seq in exons
                 new_cdna_chars: List[str] = []
-                for cdna_pos in sorted(res.cdna_to_dna_map):
-                    orig_pos = res.cdna_to_dna_map[cdna_pos]
+                # Reconstruct in ASCENDING reference-sequence order so minus-strand
+                # transcripts are not reversed: cdna_to_dna_map reports the strand-aware
+                # genomic coordinate (descending for strand=-1) and must NOT drive
+                # reconstruction. cdna_to_refindex tracks the reference-sequence order;
+                # it equals cdna_to_dna_map for strand=+1 and for results built before this
+                # field existed we fall back to the old behaviour.
+                recon_map = getattr(res, "cdna_to_refindex", None) or res.cdna_to_dna_map
+                for cdna_pos in sorted(recon_map):
+                    orig_pos = recon_map[cdna_pos]
                     if orig_pos not in orig_to_mut:
                         # that nucleotide was deleted
                         continue
